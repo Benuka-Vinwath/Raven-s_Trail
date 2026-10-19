@@ -1,0 +1,60 @@
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Mountain, Clock, Star } from "lucide-react";
+import type { Trail } from "../../types";
+import RidgeIllustration from "../illustrations/RidgeIllustration";
+import DifficultyTag from "../ui/DifficultyTag";
+
+const MotionLink = motion.create(Link);
+
+export default function TrailCard({ trail }: { trail: Trail }) {
+  return (
+    <MotionLink
+      to={`/trails/${trail.slug}`}
+      layout
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10, transition: { duration: 0.18 } }}
+      className="group block bg-parchment-100/60 border border-ink-900/10 hover:border-forest-500/40 hover:shadow-elevate transition-[border-color,box-shadow] duration-300 ease-smooth rounded overflow-hidden"
+      whileHover={{ y: -6 }}
+      whileTap={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 300, damping: 24 }}
+    >
+      <div className="relative h-40 overflow-hidden">
+        <RidgeIllustration
+          variant={trail.illustration}
+          className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-700 ease-smooth"
+        />
+        <div className="absolute top-3 left-3 bg-parchment-50/90 backdrop-blur px-2.5 py-1 rounded text-xs font-medium text-ink-900">
+          {trail.district}
+        </div>
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-display text-lg text-ink-900 leading-snug">{trail.name}</h3>
+          <div className="flex items-center gap-1 text-sm text-ink-700 shrink-0 mt-1">
+            <Star size={14} className="fill-gold-500 text-gold-500" />
+            {trail.rating}
+          </div>
+        </div>
+
+        <p className="mt-1.5 text-sm text-ink-700/75 line-clamp-2 leading-relaxed">{trail.summary}</p>
+
+        <div className="mt-4 flex items-center justify-between text-sm text-ink-700/80">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <Mountain size={15} className="text-forest-600" />
+              {trail.peakElevationM} m
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock size={15} className="text-forest-600" />
+              {trail.durationHrs}h
+            </span>
+          </div>
+          <DifficultyTag difficulty={trail.difficulty} />
+        </div>
+      </div>
+    </MotionLink>
+  );
+}
