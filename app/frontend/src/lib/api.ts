@@ -11,7 +11,7 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "DELETE";
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   token?: string | null;
 }
@@ -51,6 +51,10 @@ export const authApi = {
   login: (body: { email: string; password: string }) =>
     request<AuthResponse>("/auth/login", { method: "POST", body }),
   me: (token: string) => request<User>("/auth/me", { token }),
+  updateProfile: (
+    token: string,
+    body: { name?: string; email?: string; currentPassword?: string; newPassword?: string; avatarUrl?: string | null }
+  ) => request<User>("/auth/me", { method: "PATCH", body, token }),
 };
 
 export const trailsApi = {

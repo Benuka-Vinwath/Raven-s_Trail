@@ -13,6 +13,7 @@ function mapReview(row: any) {
     date: row.created_at.toISOString().slice(0, 10),
     text: row.body,
     tags: row.tags,
+    avatarUrl: row.avatar_url ?? null,
   };
 }
 
@@ -35,8 +36,9 @@ async function getTrailIdBySlug(slug: string): Promise<string> {
 export async function listRecentReviews(req: Request, res: Response) {
   const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
   const { rows } = await pool.query(
-    `SELECT reviews.*, trails.slug AS trail_slug, trails.name AS trail_name
+    `SELECT reviews.*, trails.slug AS trail_slug, trails.name AS trail_name, users.avatar_url
      FROM reviews JOIN trails ON trails.id = reviews.trail_id
+     LEFT JOIN users ON users.id = reviews.user_id
      ORDER BY reviews.created_at DESC
      LIMIT $1`,
     [limit]
@@ -46,7 +48,11 @@ export async function listRecentReviews(req: Request, res: Response) {
 
 export async function listReviewsForTrail(req: AuthedRequest, res: Response) {
   const trailId = await getTrailIdBySlug(req.params.slug);
-  const { rows } = await pool.query("SELECT * FROM reviews WHERE trail_id = $1 ORDER BY created_at DESC", [trailId]);
+  const { rows } = await pool.query(
+    `SELECT reviews.*, users.avatar_url FROM reviews LEFT JOIN users ON users.id = reviews.user_id
+     WHERE trail_id = $1 ORDER BY reviews.created_at DESC`,
+    [trailId]
+  );
   res.json(rows.map(mapReview));
 }
 

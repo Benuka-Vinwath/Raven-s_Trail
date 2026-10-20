@@ -12,6 +12,7 @@ import {
   ArrowUpRight,
   Star,
 } from "lucide-react";
+import Avatar from "../components/ui/Avatar";
 import Button from "../components/ui/Button";
 import CountUp from "../components/ui/CountUp";
 import Reveal from "../components/ui/Reveal";
@@ -262,7 +263,10 @@ export default function Home() {
               <Reveal key={r.id} delay={i * 0.12}>
                 <div className="rounded-3xl border border-ink-900/10 bg-parchment-100/40 p-6 transition-[border-color,box-shadow,transform] duration-300 ease-smooth hover:-translate-y-1 hover:border-forest-500/40 hover:shadow-elevate">
                   <div className="flex items-center justify-between">
-                    <p className="font-medium text-ink-900">{r.author}</p>
+                    <div className="flex items-center gap-3">
+                      <Avatar name={r.author} src={r.avatarUrl} className="h-8 w-8 text-xs" />
+                      <p className="font-medium text-ink-900">{r.author}</p>
+                    </div>
                     <div className="flex items-center gap-1 text-sm text-ink-700">
                       <Star size={14} className="fill-gold-500 text-gold-500" />
                       {r.rating}

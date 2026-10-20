@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import RavenMark from "../icons/RavenMark";
+import Avatar from "../ui/Avatar";
 import Button from "../ui/Button";
 import { useAuth } from "../../context/AuthContext";
 
@@ -70,9 +71,10 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-white/70">
+              <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white" title="Edit profile">
+                <Avatar name={user.name} src={user.avatarUrl} className="h-7 w-7 text-xs" />
                 Hi, <span className="font-medium text-white">{user.name.split(" ")[0]}</span>
-              </span>
+              </Link>
               <Button variant="glass" size="sm" onClick={handleLogout}>
                 <LogOut size={14} />
                 Sign out
@@ -139,9 +141,10 @@ export default function Navbar() {
               ))}
               {user ? (
                 <div className="flex items-center justify-between pt-4">
-                  <span className="text-sm text-white/70">
+                  <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white" title="Edit profile">
+                <Avatar name={user.name} src={user.avatarUrl} className="h-7 w-7 text-xs" />
                     Hi, <span className="font-medium text-white">{user.name.split(" ")[0]}</span>
-                  </span>
+                  </Link>
                   <Button variant="glass" size="sm" onClick={handleLogout}>
                     <LogOut size={14} />
                     Sign out

@@ -17,8 +17,24 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+const updateProfileSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120).optional(),
+    email: z.string().trim().toLowerCase().email().optional(),
+    currentPassword: z.string().optional(),
+    newPassword: z.string().min(8).max(200).optional(),
+    // null removes the photo
+    avatarUrl: z
+      .string()
+      .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Invalid image")
+      .max(300_000, "Image is too large")
+      .nullable()
+      .optional(),
+  })
+  .refine((b) => b.name || b.email || b.newPassword || b.avatarUrl !== undefined, { message: "Nothing to update" });
+
 function mapUser(row: any) {
-  return { id: row.id, name: row.name, email: row.email, createdAt: row.created_at };
+  return { id: row.id, name: row.name, email: row.email, createdAt: row.created_at, avatarUrl: row.avatar_url ?? null };
 }
 
 export async function signup(req: AuthedRequest, res: Response) {
@@ -57,4 +73,46 @@ export async function me(req: AuthedRequest, res: Response) {
   const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
   if (rows.length === 0) throw ApiError.notFound("User not found");
   res.json(mapUser(rows[0]));
+}
+
+export async function updateProfile(req: AuthedRequest, res: Response) {
+  if (!req.user) throw ApiError.unauthorized();
+  const body = updateProfileSchema.parse(req.body);
+
+  const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+  const user = rows[0];
+  if (!user) throw ApiError.notFound("User not found");
+
+  const emailChanged = body.email !== undefined && body.email !== user.email;
+  if (emailChanged || body.newPassword) {
+    const ok = body.currentPassword && (await bcrypt.compare(body.currentPassword, user.password_hash));
+    if (!ok) throw ApiError.forbidden("Current password is incorrect");
+  }
+  if (emailChanged) {
+    const taken = await pool.query("SELECT id FROM users WHERE email = $1 AND id <> $2", [body.email, user.id]);
+    if (taken.rows.length > 0) throw ApiError.conflict("An account with this email already exists");
+  }
+
+  const name = body.name ?? user.name;
+  const email = body.email ?? user.email;
+  const passwordHash = body.newPassword ? await bcrypt.hash(body.newPassword, 10) : user.password_hash;
+  const avatarUrl = body.avatarUrl === undefined ? user.avatar_url : body.avatarUrl;
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const updated = await client.query(
+      "UPDATE users SET name = $1, email = $2, password_hash = $3, avatar_url = $4 WHERE id = $5 RETURNING *",
+      [name, email, passwordHash, avatarUrl, user.id]
+    );
+    // reviews store the author name as text, so keep it in step with the profile
+    await client.query("UPDATE reviews SET author = $1 WHERE user_id = $2", [name, user.id]);
+    await client.query("COMMIT");
+    res.json(mapUser(updated.rows[0]));
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 }

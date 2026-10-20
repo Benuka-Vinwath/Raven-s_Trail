@@ -24,6 +24,7 @@ const PAGE = {
   budget: "1641149750086-b11cd21d1f60",
   weather: "1603731510149-3cdcd45927a5",
   community: "1667617139130-1c161474b680",
+  profile: "1705730631841-5c02db0885ed",
   notFound: HERO,
 };
 export const pagePhoto = (page: keyof typeof PAGE, w = 1800) => photo(PAGE[page], w);

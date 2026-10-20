@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { useTrail } from "../hooks/useTrails";
 import { useTrailReviews } from "../hooks/useReviews";
 import { trailPhoto } from "../lib/photos";
+import Avatar from "../components/ui/Avatar";
 import DifficultyTag from "../components/ui/DifficultyTag";
 import ElevationSparkline from "../components/ui/ElevationSparkline";
 import GearShopsPanel from "../components/trails/GearShopsPanel";
@@ -172,7 +173,7 @@ function Stat({ icon: Icon, label, value }: { icon: typeof Mountain; label: stri
   );
 }
 
-function ReviewsPanel({ reviews, loading }: { reviews: { id: string; author: string; rating: number; date: string; text: string }[]; loading: boolean }) {
+function ReviewsPanel({ reviews, loading }: { reviews: { id: string; author: string; avatarUrl: string | null; rating: number; date: string; text: string }[]; loading: boolean }) {
   if (loading) return <p className="text-sm text-ink-700/60">Loading trip reports…</p>;
 
   if (reviews.length === 0) {
@@ -189,7 +190,10 @@ function ReviewsPanel({ reviews, loading }: { reviews: { id: string; author: str
       {reviews.map((r) => (
         <div key={r.id} className="reveal border-b border-ink-900/10 pb-5">
           <div className="flex items-center justify-between">
-            <p className="font-medium text-ink-900 text-sm">{r.author}</p>
+            <div className="flex items-center gap-2.5">
+              <Avatar name={r.author} src={r.avatarUrl} className="h-7 w-7 text-xs" />
+              <p className="font-medium text-ink-900 text-sm">{r.author}</p>
+            </div>
             <div className="flex items-center gap-1 text-sm text-ink-700">
               <Star size={13} className="fill-gold-500 text-gold-500" />
               {r.rating}

@@ -9,6 +9,7 @@ import Parking from "./pages/Parking";
 import Budget from "./pages/Budget";
 import Weather from "./pages/Weather";
 import Community from "./pages/Community";
+import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/budget" element={<Budget />} />
           <Route path="/weather" element={<Weather />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

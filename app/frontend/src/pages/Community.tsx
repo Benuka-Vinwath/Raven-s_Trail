@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useTrails } from "../hooks/useTrails";
 import { useRecentReviews } from "../hooks/useReviews";
 import { useAuth } from "../context/AuthContext";
+import Avatar from "../components/ui/Avatar";
 import { reviewsApi, ApiError } from "../lib/api";
 import Button from "../components/ui/Button";
 
@@ -71,11 +72,14 @@ export default function Community() {
                 className="border border-ink-900/10 rounded-2xl p-6 hover:border-forest-500/40 hover:shadow-elevate transition-[border-color,box-shadow] duration-300 ease-smooth"
               >
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div>
-                    <p className="font-medium text-ink-900">{r.author}</p>
-                    <p className="text-xs text-ink-700/60">
-                      {r.trailName} · {r.date}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <Avatar name={r.author} src={r.avatarUrl} />
+                    <div>
+                      <p className="font-medium text-ink-900">{r.author}</p>
+                      <p className="text-xs text-ink-700/60">
+                        {r.trailName} · {r.date}
+                      </p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-ink-700">
                     {Array.from({ length: 5 }).map((_, i) => (

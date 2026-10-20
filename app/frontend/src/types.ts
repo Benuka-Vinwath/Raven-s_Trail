@@ -64,6 +64,7 @@ export interface Review {
   date: string;
   text: string;
   tags: string[];
+  avatarUrl: string | null;
 }
 
 export interface RecentReview extends Review {
@@ -76,4 +77,5 @@ export interface User {
   name: string;
   email: string;
   createdAt: string;
+  avatarUrl: string | null;
 }
