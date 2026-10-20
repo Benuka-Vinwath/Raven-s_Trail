@@ -12,6 +12,8 @@
     "start": "node dist/server.js",
     "migrate": "tsx src/db/migrate.ts",
     "seed": "tsx src/db/seed.ts",
+    "seed:trails": "tsx src/db/addTrails.ts",
+    "seed:shops": "tsx src/db/seedShops.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

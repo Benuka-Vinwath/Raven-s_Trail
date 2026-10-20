@@ -49,6 +49,10 @@ export async function listGearShops(req: Request, res: Response) {
       address: shop.address,
       rating: Number(shop.rating),
       reviewCount: shop.review_count,
+      phone: shop.phone,
+      website: shop.website,
+      note: shop.note,
+      sourceUrl: shop.source_url,
       nearTrails: nearTrailRows.filter((r) => r.shop_id === shop.id).map((r) => r.trail_name),
       items: items.filter((i) => i.shop_id === shop.id).map(mapItem),
     }))

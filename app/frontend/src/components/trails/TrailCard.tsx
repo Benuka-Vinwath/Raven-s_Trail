@@ -11,11 +11,9 @@ export default function TrailCard({ trail }: { trail: Trail }) {
   return (
     <MotionLink
       to={`/trails/${trail.slug}`}
-      layout
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      exit={{ opacity: 0, y: -10, transition: { duration: 0.18 } }}
       className="group block bg-parchment-100/60 border border-ink-900/10 hover:border-forest-500/40 hover:shadow-elevate transition-[border-color,box-shadow] duration-300 ease-smooth rounded-3xl overflow-hidden"
       whileHover={{ y: -6 }}
       whileTap={{ y: -2 }}
@@ -37,8 +35,14 @@ export default function TrailCard({ trail }: { trail: Trail }) {
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-display text-lg text-ink-900 leading-snug">{trail.name}</h3>
           <div className="flex items-center gap-1 text-sm text-ink-700 shrink-0 mt-1">
-            <Star size={14} className="fill-gold-500 text-gold-500" />
-            {trail.rating}
+            {trail.reviewCount > 0 ? (
+              <>
+                <Star size={14} className="fill-gold-500 text-gold-500" />
+                {trail.rating}
+              </>
+            ) : (
+              <span className="text-xs font-medium text-forest-700">New</span>
+            )}
           </div>
         </div>
 

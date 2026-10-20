@@ -77,11 +77,11 @@ export default function Rentals() {
                     item={item}
                     inCart={Boolean(cart[item.id])}
                     onToggle={() => toggle(item.id)}
-                    metaLine={`per day · ${item.available} available`}
+                    metaLine={item.available > 0 ? `per day · ${item.available} available` : "per day · confirm availability"}
                   />
                   <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-700/60 px-1">
-                    <Star size={11} className="fill-gold-500 text-gold-500" />
-                    {item.shopRating} · {item.shopName} · {item.district}
+                    {item.shopRating > 0 && <Star size={11} className="fill-gold-500 text-gold-500" />}
+                    {item.shopRating > 0 && `${item.shopRating} · `}{item.shopName} · {item.district}
                   </p>
                 </div>
               ))}

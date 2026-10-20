@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import PageHero from "../components/layout/PageHero";
 import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import TrailCard from "../components/trails/TrailCard";
 import TrailsMap from "../components/trails/TrailsMap";
@@ -37,7 +36,7 @@ export default function Trails() {
     });
 
     result = [...result].sort((a, b) => {
-      if (sort === "rating") return b.rating - a.rating;
+      if (sort === "rating") return b.rating - a.rating || b.reviewCount - a.reviewCount || a.name.localeCompare(b.name);
       if (sort === "elevation") return b.peakElevationM - a.peakElevationM;
       return a.distanceKm - b.distanceKm;
     });
@@ -167,13 +166,12 @@ export default function Trails() {
                 <p className="mt-1 text-sm text-ink-700/70">Try clearing a filter or searching a different district.</p>
               </div>
             ) : (
-              <motion.div layout className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                <AnimatePresence mode="popLayout">
-                  {filtered.map((t) => (
-                    <TrailCard key={t.id} trail={t} />
-                  ))}
-                </AnimatePresence>
-              </motion.div>
+              // keyed on the sort so re-ordering remounts the grid; layout animations on 40 cards left them stranded at their old positions
+              <div key={sort} className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filtered.map((t) => (
+                  <TrailCard key={t.id} trail={t} />
+                ))}
+              </div>
             )}
           </div>
         </div>

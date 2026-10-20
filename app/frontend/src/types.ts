@@ -20,6 +20,16 @@ export interface Trail {
   startPoint: [number, number];
   elevationProfile: number[];
   illustration: "dawn" | "misty" | "midday" | "dusk";
+  costs: TrailCosts;
+}
+
+// Sri Lankan resident rates in LKR; rough estimates
+export interface TrailCosts {
+  entryFeeLkr: number; // per person
+  guideFeeLkr: number; // per group per day, 0 = not needed
+  transferLkr: number; // per group, to the trailhead and back
+  stayPerNightLkr: number; // per person, standard guesthouse
+  transportFromColomboLkr: number; // per person round trip by bus
 }
 
 export type GearCategory = "Shelter" | "Pack" | "Cook" | "Safety" | "Sleep";
@@ -40,6 +50,10 @@ export interface GearShop {
   address: string;
   rating: number;
   reviewCount: number;
+  phone: string | null;
+  website: string | null;
+  note: string | null;
+  sourceUrl: string | null; // set for real businesses, null for placeholder shops
   nearTrails: string[];
   items: ShopItem[];
 }

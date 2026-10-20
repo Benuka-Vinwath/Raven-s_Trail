@@ -23,7 +23,7 @@ export default function GearItemCard({ item, inCart, onToggle, metaLine }: GearI
       <div className="mt-4 flex items-center justify-between">
         <div>
           <p className="font-display text-lg text-ink-900">LKR {item.pricePerDay}</p>
-          <p className="text-xs text-ink-700/60">{metaLine ?? `per day · ${item.available} available`}</p>
+          <p className="text-xs text-ink-700/60">{metaLine ?? item.available > 0 ? `per day · ${item.available} available` : "per day · confirm availability"}</p>
         </div>
         <motion.button
           onClick={onToggle}

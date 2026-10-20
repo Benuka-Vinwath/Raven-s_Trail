@@ -73,6 +73,29 @@ export const parkingApi = {
   list: (trailSlug?: string) => request<ParkingSpot[]>(`/parking${trailSlug ? `?trail=${trailSlug}` : ""}`),
 };
 
+export interface BudgetPlanInput {
+  trailSlug: string;
+  people: number;
+  days: number;
+  style: "budget" | "standard" | "comfortable";
+  transport: string;
+  startingFrom?: string;
+  budget?: number;
+  lines: { label: string; amount: number }[];
+  total: number;
+}
+
+export interface BudgetPlan {
+  summary: string;
+  itinerary: { day: number; title: string; plan: string }[];
+  savings: { title: string; detail: string; savingLkr: number }[];
+  packing: string[];
+}
+
+export const budgetApi = {
+  plan: (body: BudgetPlanInput, token: string) => request<BudgetPlan>("/budget/plan", { method: "POST", body, token }),
+};
+
 export const reviewsApi = {
   recent: (limit = 20) => request<RecentReview[]>(`/reviews?limit=${limit}`),
   forTrail: (slug: string) => request<Review[]>(`/trails/${slug}/reviews`),

@@ -4,6 +4,7 @@ import { trailsRouter } from "./trails.routes.js";
 import { gearShopsRouter } from "./gearShops.routes.js";
 import { parkingRouter } from "./parking.routes.js";
 import { reviewsRouter } from "./reviews.routes.js";
+import { budgetRouter } from "./budget.routes.js";
 import { tripsRouter } from "./trips.routes.js";
 
 export const apiRouter = Router();
@@ -16,3 +17,4 @@ apiRouter.use("/gear-shops", gearShopsRouter);
 apiRouter.use("/parking", parkingRouter);
 apiRouter.use("/reviews", reviewsRouter);
 apiRouter.use("/trips", tripsRouter);
+apiRouter.use("/budget", budgetRouter);

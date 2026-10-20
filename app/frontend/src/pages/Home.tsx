@@ -58,7 +58,8 @@ export default function Home() {
   );
   const top = featured[0];
   const reviewTotal = (trails ?? []).reduce((sum, t) => sum + t.reviewCount, 0);
-  const avgRating = trails?.length ? trails.reduce((sum, t) => sum + t.rating, 0) / trails.length : 0;
+  const rated = (trails ?? []).filter((t) => t.reviewCount > 0);
+  const avgRating = rated.length ? rated.reduce((sum, t) => sum + t.rating, 0) / rated.length : 0;
   const districtCount = new Set((trails ?? []).map((t) => t.district)).size;
   const gearItemCount = (gearShops ?? []).reduce((sum, shop) => sum + shop.items.length, 0);
 

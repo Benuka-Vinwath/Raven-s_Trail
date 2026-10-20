@@ -23,6 +23,13 @@ function mapTrail(row: any) {
     startPoint: [row.start_lat, row.start_lng],
     elevationProfile: row.elevation_profile,
     illustration: row.illustration,
+    costs: {
+      entryFeeLkr: row.entry_fee_lkr,
+      guideFeeLkr: row.guide_fee_lkr,
+      transferLkr: row.transfer_lkr,
+      stayPerNightLkr: row.stay_per_night_lkr,
+      transportFromColomboLkr: row.transport_from_colombo_lkr,
+    },
   };
 }
 

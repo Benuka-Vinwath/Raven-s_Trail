@@ -1,30 +1,8 @@
 import { pool } from "./pool.js";
+import { insertRealShops } from "./gearShopData.js";
+import { applyTrailCosts, insertTrail, moreTrails, type SeedTrail } from "./trailData.js";
 
-type Difficulty = "easy" | "moderate" | "hard";
-type Illustration = "dawn" | "misty" | "midday" | "dusk";
 type Category = "Shelter" | "Pack" | "Cook" | "Safety" | "Sleep";
-
-interface SeedTrail {
-  mockId: string;
-  slug: string;
-  name: string;
-  district: string;
-  region: string;
-  difficulty: Difficulty;
-  distanceKm: number;
-  elevationGainM: number;
-  peakElevationM: number;
-  durationHrs: number;
-  rating: number;
-  reviewCount: number;
-  tags: string[];
-  summary: string;
-  description: string;
-  bestSeason: string;
-  startPoint: [number, number];
-  elevationProfile: number[];
-  illustration: Illustration;
-}
 
 const trails: SeedTrail[] = [
   {
@@ -364,40 +342,13 @@ async function seed() {
     const mockIdToDbId = new Map<string, string>();
     const nameToDbId = new Map<string, string>();
 
-    for (const t of trails) {
-      const { rows } = await client.query<{ id: string }>(
-        `INSERT INTO trails
-          (slug, name, district, region, difficulty, distance_km, elevation_gain_m, peak_elevation_m,
-           duration_hrs, rating, review_count, tags, summary, description, best_season,
-           start_lat, start_lng, elevation_profile, illustration)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
-         RETURNING id`,
-        [
-          t.slug,
-          t.name,
-          t.district,
-          t.region,
-          t.difficulty,
-          t.distanceKm,
-          t.elevationGainM,
-          t.peakElevationM,
-          t.durationHrs,
-          t.rating,
-          t.reviewCount,
-          t.tags,
-          t.summary,
-          t.description,
-          t.bestSeason,
-          t.startPoint[0],
-          t.startPoint[1],
-          t.elevationProfile,
-          t.illustration,
-        ]
-      );
-      mockIdToDbId.set(t.mockId, rows[0].id);
-      nameToDbId.set(t.name, rows[0].id);
+    for (const t of [...trails, ...moreTrails]) {
+      const id = (await insertTrail(client, t))!;
+      mockIdToDbId.set(t.mockId, id);
+      nameToDbId.set(t.name, id);
     }
-    console.log(`seeded ${trails.length} trails`);
+    await applyTrailCosts(client);
+    console.log(`seeded ${trails.length + moreTrails.length} trails`);
 
     for (const shop of gearShops) {
       const { rows } = await client.query<{ id: string }>(
@@ -421,7 +372,8 @@ async function seed() {
         await client.query(`INSERT INTO gear_shop_trails (shop_id, trail_id) VALUES ($1,$2)`, [shopId, trailId]);
       }
     }
-    console.log(`seeded ${gearShops.length} gear shops`);
+    await insertRealShops(client);
+    console.log(`seeded ${gearShops.length} placeholder + real gear shops`);
 
     for (const p of parkingSpots) {
       const trailId = nameToDbId.get(p.nearTrail);

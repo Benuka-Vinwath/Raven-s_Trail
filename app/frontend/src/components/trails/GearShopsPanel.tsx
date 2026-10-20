@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Star, MapPin } from "lucide-react";
+import { ChevronDown, Star, MapPin, Phone, Globe } from "lucide-react";
 import { useGearShops } from "../../hooks/useGearShops";
 import { useGearCart } from "../../hooks/useGearCart";
 import GearItemCard from "../gear/GearItemCard";
@@ -47,8 +47,8 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
     <div className="grid lg:grid-cols-[1fr_18rem] gap-10">
       <div className="space-y-4">
         <p className="text-sm text-ink-700/70">
-          {shops.length} {shops.length === 1 ? "shop serves" : "shops serve"} the {trail.name} trailhead. Tap a
-          shop to see what's in stock.
+          {shops.length} {shops.length === 1 ? "shop can" : "shops can"} supply gear for {trail.name}. Tap a
+          shop for prices and how to book.
         </p>
 
         {shops.map((shop) => {
@@ -67,8 +67,9 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
                     {shop.address}
                   </p>
                   <p className="mt-1 flex items-center gap-1.5 text-xs text-ink-700/70">
-                    <Star size={12} className="fill-gold-500 text-gold-500" />
-                    {shop.rating} ({shop.reviewCount}) · {shop.items.length} items available
+                    {shop.reviewCount > 0 && <Star size={12} className="fill-gold-500 text-gold-500" />}
+                    {shop.reviewCount > 0 && `${shop.rating} (${shop.reviewCount}) · `}
+                    {shop.items.length > 0 ? `${shop.items.length} items with prices` : "Prices on request"}
                   </p>
                 </div>
                 <motion.span
@@ -89,6 +90,28 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
                     transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     className="overflow-hidden border-t border-ink-900/10"
                   >
+                    {(shop.phone || shop.website || shop.note) && (
+                      <div className="space-y-1.5 border-b border-ink-900/10 bg-forest-600/5 p-5 text-sm text-ink-700">
+                        {shop.phone && (
+                          <p className="flex items-center gap-2">
+                            <Phone size={14} className="shrink-0 text-forest-600" />
+                            {shop.phone}
+                          </p>
+                        )}
+                        {shop.website && (
+                          <a href={shop.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-forest-700 underline-offset-2 hover:underline">
+                            <Globe size={14} className="shrink-0" />
+                            Visit their site to book
+                          </a>
+                        )}
+                        {shop.note && <p className="text-xs leading-relaxed text-ink-700/75">{shop.note}</p>}
+                        {shop.sourceUrl && (
+                          <a href={shop.sourceUrl} target="_blank" rel="noreferrer" className="inline-block text-xs text-ink-700/50 underline-offset-2 hover:underline">
+                            Source
+                          </a>
+                        )}
+                      </div>
+                    )}
                     <div className="grid sm:grid-cols-2 gap-4 p-5">
                       {shop.items.map((item) => (
                         <GearItemCard

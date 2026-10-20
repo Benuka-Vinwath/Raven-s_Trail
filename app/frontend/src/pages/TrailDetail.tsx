@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import { useTrail } from "../hooks/useTrails";
 import { useTrailReviews } from "../hooks/useReviews";
-import { trailPhoto } from "../lib/photos";
+import { trailPhoto, trailPhotoCredit } from "../lib/photos";
 import Avatar from "../components/ui/Avatar";
 import DifficultyTag from "../components/ui/DifficultyTag";
 import ElevationSparkline from "../components/ui/ElevationSparkline";
@@ -49,6 +49,9 @@ export default function TrailDetail() {
         <div className="pointer-events-none absolute inset-2 z-10 rounded-[2rem] border-2 border-white/25 sm:rounded-[2.75rem]" />
         <img src={trailPhoto(trail.slug, 1800)} alt={trail.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-pine-950/80 via-pine-950/20 to-pine-950/30" />
+        {trailPhotoCredit(trail.slug) && (
+          <p className="absolute bottom-3 right-6 z-10 text-[0.65rem] text-white/60">Photo: {trailPhotoCredit(trail.slug)}</p>
+        )}
         <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-5 pb-6 w-full">
           <Link
             to="/trails"
@@ -81,7 +84,7 @@ export default function TrailDetail() {
           <DifficultyTag difficulty={trail.difficulty} />
           <span className="flex items-center gap-1 text-sm text-ink-700">
             <Star size={14} className="fill-gold-500 text-gold-500" />
-            {trail.rating} ({trail.reviewCount} reviews)
+            {trail.reviewCount > 0 ? `${trail.rating} (${trail.reviewCount} reviews)` : "No reviews yet"}
           </span>
           <span className="flex items-center gap-1.5 text-sm text-ink-700">
             <Calendar size={14} />
