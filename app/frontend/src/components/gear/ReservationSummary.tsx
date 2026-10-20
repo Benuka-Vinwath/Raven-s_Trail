@@ -10,7 +10,7 @@ interface ReservationSummaryProps {
 
 export default function ReservationSummary({ cartItems, total, onSetDays, title = "Your reservation" }: ReservationSummaryProps) {
   return (
-    <div className="border border-ink-900/10 rounded p-5 h-fit lg:sticky lg:top-24">
+    <div className="border border-ink-900/10 rounded-2xl p-5 h-fit lg:sticky lg:top-24">
       <h2 className="font-medium text-ink-900">{title}</h2>
       <AnimatePresence mode="wait" initial={false}>
         {cartItems.length === 0 ? (
@@ -44,7 +44,7 @@ export default function ReservationSummary({ cartItems, total, onSetDays, title 
                       min={1}
                       value={days}
                       onChange={(e) => onSetDays(item.id, Number(e.target.value))}
-                      className="w-12 rounded border border-ink-900/15 px-1.5 py-1 text-center text-xs transition-colors duration-200 ease-smooth focus:border-forest-500 outline-none"
+                      className="w-12 rounded-2xl border border-ink-900/15 px-1.5 py-1 text-center text-xs transition-colors duration-200 ease-smooth focus:border-forest-500 outline-none"
                     />
                     <span className="text-ink-700/60 text-xs">days</span>
                   </div>

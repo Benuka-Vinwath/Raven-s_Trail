@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import { useTrail } from "../hooks/useTrails";
 import { useTrailReviews } from "../hooks/useReviews";
-import RidgeIllustration from "../components/illustrations/RidgeIllustration";
+import { trailPhoto } from "../lib/photos";
 import DifficultyTag from "../components/ui/DifficultyTag";
 import ElevationSparkline from "../components/ui/ElevationSparkline";
 import GearShopsPanel from "../components/trails/GearShopsPanel";
@@ -44,19 +44,20 @@ export default function TrailDetail() {
 
   return (
     <div>
-      <div className="h-64 sm:h-80 relative">
-        <RidgeIllustration variant={trail.illustration} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-pine-950/60 via-transparent to-transparent" />
+      <div className="h-80 sm:h-[26rem] relative -mt-[4.25rem]">
+        <div className="pointer-events-none absolute inset-2 z-10 rounded-[2rem] border-2 border-white/25 sm:rounded-[2.75rem]" />
+        <img src={trailPhoto(trail.slug, 1800)} alt={trail.name} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-pine-950/80 via-pine-950/20 to-pine-950/30" />
         <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-5 pb-6 w-full">
           <Link
             to="/trails"
-            className="inline-flex items-center gap-1.5 text-sm text-parchment-50/90 hover:text-parchment-50 transition-colors duration-200 ease-smooth"
+            className="inline-flex items-center gap-1.5 text-sm text-white/90 hover:text-white transition-colors duration-200 ease-smooth"
           >
             <ArrowLeft size={15} />
             All trails
           </Link>
-          <h1 className="mt-2 font-display text-3xl sm:text-4xl text-parchment-50">{trail.name}</h1>
-          <p className="text-parchment-50/85 mt-1">
+          <h1 className="mt-2 font-display text-3xl sm:text-4xl text-white">{trail.name}</h1>
+          <p className="text-white/85 mt-1">
             {trail.district} · {trail.region}
           </p>
         </div>
@@ -100,7 +101,7 @@ export default function TrailDetail() {
           ))}
         </div>
 
-        <div className="mt-8 border border-ink-900/10 rounded p-6 max-w-3xl">
+        <div className="mt-8 border border-ink-900/10 rounded-2xl p-6 max-w-3xl">
           <h2 className="font-medium text-ink-900">Elevation profile</h2>
           <ElevationSparkline profile={trail.elevationProfile} className="mt-4 w-full h-24" />
           <div className="mt-2 flex justify-between text-xs text-ink-700/60">
@@ -116,7 +117,7 @@ export default function TrailDetail() {
             Everything for {trail.name} in one place — gear, parking, weather and budget.
           </p>
 
-          <div className="mt-6 border-b border-ink-900/10 flex gap-6 overflow-x-auto">
+          <div className="mt-6 border-b border-ink-900/10 flex gap-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none]">
             {TABS.map((t) => {
               const isActive = t.id === tab;
               return (
@@ -133,7 +134,7 @@ export default function TrailDetail() {
                   {isActive && (
                     <motion.span
                       layoutId="trail-tab-underline"
-                      className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-clay-600 rounded-full"
+                      className="absolute left-0 right-0 bottom-0 h-[2px] bg-clay-600 rounded-full"
                       transition={{ type: "spring", stiffness: 500, damping: 40 }}
                     />
                   )}
@@ -163,7 +164,7 @@ export default function TrailDetail() {
 
 function Stat({ icon: Icon, label, value }: { icon: typeof Mountain; label: string; value: string }) {
   return (
-    <div className="border border-ink-900/10 rounded p-4 hover:border-forest-500/40 hover:shadow-elevate hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth">
+    <div className="border border-ink-900/10 rounded-2xl p-4 hover:border-forest-500/40 hover:shadow-elevate reveal hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth">
       <Icon size={18} className="text-forest-600" />
       <p className="mt-2 font-display text-xl text-ink-900">{value}</p>
       <p className="text-xs text-ink-700/60">{label}</p>
@@ -176,7 +177,7 @@ function ReviewsPanel({ reviews, loading }: { reviews: { id: string; author: str
 
   if (reviews.length === 0) {
     return (
-      <div className="border border-dashed border-ink-900/20 rounded p-8 text-center max-w-3xl">
+      <div className="border border-dashed border-ink-900/20 rounded-2xl p-8 text-center max-w-3xl">
         <p className="text-ink-900 font-medium">No reviews yet</p>
         <p className="mt-1 text-sm text-ink-700/70">Be the first to hike and report back.</p>
       </div>
@@ -186,7 +187,7 @@ function ReviewsPanel({ reviews, loading }: { reviews: { id: string; author: str
   return (
     <div className="max-w-3xl space-y-5">
       {reviews.map((r) => (
-        <div key={r.id} className="border-b border-ink-900/10 pb-5">
+        <div key={r.id} className="reveal border-b border-ink-900/10 pb-5">
           <div className="flex items-center justify-between">
             <p className="font-medium text-ink-900 text-sm">{r.author}</p>
             <div className="flex items-center gap-1 text-sm text-ink-700">

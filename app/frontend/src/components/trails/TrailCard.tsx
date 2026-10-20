@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mountain, Clock, Star } from "lucide-react";
 import type { Trail } from "../../types";
-import RidgeIllustration from "../illustrations/RidgeIllustration";
+import { trailPhoto } from "../../lib/photos";
 import DifficultyTag from "../ui/DifficultyTag";
 
 const MotionLink = motion.create(Link);
@@ -13,19 +13,22 @@ export default function TrailCard({ trail }: { trail: Trail }) {
       to={`/trails/${trail.slug}`}
       layout
       initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
       exit={{ opacity: 0, y: -10, transition: { duration: 0.18 } }}
-      className="group block bg-parchment-100/60 border border-ink-900/10 hover:border-forest-500/40 hover:shadow-elevate transition-[border-color,box-shadow] duration-300 ease-smooth rounded overflow-hidden"
+      className="group block bg-parchment-100/60 border border-ink-900/10 hover:border-forest-500/40 hover:shadow-elevate transition-[border-color,box-shadow] duration-300 ease-smooth rounded-3xl overflow-hidden"
       whileHover={{ y: -6 }}
       whileTap={{ y: -2 }}
       transition={{ type: "spring", stiffness: 300, damping: 24 }}
     >
-      <div className="relative h-40 overflow-hidden">
-        <RidgeIllustration
-          variant={trail.illustration}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={trailPhoto(trail.slug)}
+          alt={trail.name}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-700 ease-smooth"
         />
-        <div className="absolute top-3 left-3 bg-parchment-50/90 backdrop-blur px-2.5 py-1 rounded text-xs font-medium text-ink-900">
+        <div className="absolute top-3 left-3 bg-parchment-50/90 backdrop-blur px-2.5 py-1 rounded-2xl text-xs font-medium text-ink-900">
           {trail.district}
         </div>
       </div>

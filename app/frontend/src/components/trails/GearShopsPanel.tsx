@@ -31,12 +31,12 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
   if (loading) return <p className="text-sm text-ink-700/60">Loading gear shops…</p>;
 
   if (error) {
-    return <div className="border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded p-4 text-sm">{error}</div>;
+    return <div className="border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded-2xl p-4 text-sm">{error}</div>;
   }
 
   if (!shops || shops.length === 0) {
     return (
-      <div className="border border-dashed border-ink-900/20 rounded p-8 text-center">
+      <div className="border border-dashed border-ink-900/20 rounded-2xl p-8 text-center">
         <p className="text-ink-900 font-medium">No partner shops listed for this trail yet</p>
         <p className="mt-1 text-sm text-ink-700/70">Check the full gear marketplace for other pickup points.</p>
       </div>
@@ -54,7 +54,7 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
         {shops.map((shop) => {
           const isOpen = expanded.has(shop.id);
           return (
-            <div key={shop.id} className="border border-ink-900/10 rounded overflow-hidden">
+            <div key={shop.id} className="reveal border border-ink-900/10 rounded-2xl overflow-hidden">
               <button
                 onClick={() => toggleShop(shop.id)}
                 className="w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-forest-600/5 transition-colors duration-300 ease-smooth"

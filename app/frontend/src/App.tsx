@@ -15,7 +15,7 @@ import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion="never">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

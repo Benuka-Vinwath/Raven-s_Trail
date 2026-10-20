@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "light" | "glass";
 type Size = "md" | "sm";
 
 const base =
@@ -11,16 +11,18 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-clay-600 text-parchment-50 hover:bg-clay-700 shadow-[0_0_0_rgba(181,80,47,0)] hover:shadow-[0_10px_30px_-8px_rgba(181,80,47,0.55)]",
+    "bg-clay-600 text-white hover:bg-clay-700 shadow-[0_0_0_rgba(181,80,47,0)] hover:shadow-[0_10px_30px_-8px_rgba(181,80,47,0.55)]",
   secondary:
-    "bg-forest-600 text-parchment-50 hover:bg-forest-700 shadow-[0_0_0_rgba(47,82,51,0)] hover:shadow-[0_10px_30px_-8px_rgba(47,82,51,0.5)]",
+    "bg-forest-600 text-white hover:bg-forest-700 shadow-[0_0_0_rgba(47,82,51,0)] hover:shadow-[0_10px_30px_-8px_rgba(47,82,51,0.5)]",
   ghost:
     "bg-transparent text-forest-700 border border-forest-600/30 hover:border-forest-600 hover:bg-forest-600/5 shadow-[0_0_0_rgba(47,82,51,0)] hover:shadow-[0_10px_24px_-10px_rgba(47,82,51,0.35)]",
+  light: "bg-white text-pine-950 hover:bg-white/85",
+  glass: "bg-white/10 text-white border border-white/25 hover:bg-white/20",
 };
 
 const sizes: Record<Size, string> = {
-  md: "px-5 py-2.5 text-[0.95rem] rounded",
-  sm: "px-3.5 py-1.5 text-sm rounded",
+  md: "px-5 py-2.5 text-[0.95rem] rounded-xl",
+  sm: "px-3.5 py-1.5 text-sm rounded-xl",
 };
 
 const hover = {

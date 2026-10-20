@@ -29,17 +29,17 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-parchment-50/55 backdrop-blur-xl backdrop-saturate-150 border-b border-white/40 shadow-[0_1px_24px_-4px_rgba(14,28,21,0.12)] supports-[backdrop-filter]:bg-parchment-50/40">
-      <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <header className="sticky top-3 z-50 mx-3 sm:mx-6 mt-3 rounded-3xl border border-white/15 bg-pine-950/75 text-parchment-50 backdrop-blur-xl backdrop-saturate-150 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.5)]">
+      <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
         <NavLink to="/" className="flex items-center gap-2 shrink-0" onClick={() => setOpen(false)}>
           <motion.span
-            className="text-forest-600 flex"
+            className="text-gold-400 flex"
             whileHover={{ rotate: -12, scale: 1.12 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
           >
             <RavenMark className="h-6 w-6" />
           </motion.span>
-          <span className="font-display text-lg text-ink-900">Raven's Trail</span>
+          <span className="font-display text-lg">Raven's Trail</span>
         </NavLink>
 
         <nav className="hidden lg:flex items-center gap-7">
@@ -50,15 +50,15 @@ export default function Navbar() {
                 key={l.to}
                 to={l.to}
                 className={clsx(
-                  "relative py-1.5 text-sm font-medium transition-colors duration-200 ease-smooth",
-                  isActive ? "text-clay-600" : "text-ink-700/80 hover:text-ink-900"
+                  "relative py-1.5 text-sm transition-colors duration-200 ease-smooth",
+                  isActive ? "text-white" : "text-white/65 hover:text-white"
                 )}
               >
                 {l.label}
                 {isActive && (
                   <motion.span
                     layoutId="nav-underline"
-                    className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-clay-600 rounded-full"
+                    className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-gold-400 rounded-full"
                     transition={{ type: "spring", stiffness: 500, damping: 40 }}
                   />
                 )}
@@ -70,20 +70,20 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-ink-700/80">
-                Hi, <span className="font-medium text-ink-900">{user.name.split(" ")[0]}</span>
+              <span className="text-sm text-white/70">
+                Hi, <span className="font-medium text-white">{user.name.split(" ")[0]}</span>
               </span>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <Button variant="glass" size="sm" onClick={handleLogout}>
                 <LogOut size={14} />
                 Sign out
               </Button>
             </>
           ) : (
             <>
-              <Button to="/login" variant="ghost" size="sm">
+              <Button to="/login" variant="glass" size="sm">
                 Sign in
               </Button>
-              <Button to="/signup" variant="primary" size="sm">
+              <Button to="/signup" variant="light" size="sm">
                 Get started
               </Button>
             </>
@@ -91,7 +91,7 @@ export default function Navbar() {
         </div>
 
         <button
-          className="lg:hidden p-2 -mr-2 text-ink-900"
+          className="lg:hidden p-2 -mr-2"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
@@ -115,13 +115,13 @@ export default function Navbar() {
         {open && (
           <motion.div
             key="mobile-menu"
-            className="lg:hidden border-t border-white/40 bg-parchment-50/70 backdrop-blur-xl backdrop-saturate-150 overflow-hidden"
+            className="lg:hidden border-t border-white/15 overflow-hidden"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <nav className="max-w-6xl mx-auto px-5 py-4 flex flex-col gap-1">
+            <nav className="px-5 py-4 flex flex-col gap-1">
               {LINKS.map((l) => (
                 <NavLink
                   key={l.to}
@@ -129,8 +129,8 @@ export default function Navbar() {
                   onClick={() => setOpen(false)}
                   className={({ isActive }) =>
                     clsx(
-                      "py-2.5 text-[0.95rem] font-medium border-b border-ink-900/5 transition-colors duration-200 ease-smooth",
-                      isActive ? "text-clay-600" : "text-ink-700"
+                      "py-2.5 text-[0.95rem] border-b border-white/10 transition-colors duration-200 ease-smooth",
+                      isActive ? "text-gold-400" : "text-white/80"
                     )
                   }
                 >
@@ -139,20 +139,20 @@ export default function Navbar() {
               ))}
               {user ? (
                 <div className="flex items-center justify-between pt-4">
-                  <span className="text-sm text-ink-700/80">
-                    Hi, <span className="font-medium text-ink-900">{user.name.split(" ")[0]}</span>
+                  <span className="text-sm text-white/70">
+                    Hi, <span className="font-medium text-white">{user.name.split(" ")[0]}</span>
                   </span>
-                  <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  <Button variant="glass" size="sm" onClick={handleLogout}>
                     <LogOut size={14} />
                     Sign out
                   </Button>
                 </div>
               ) : (
                 <div className="flex gap-3 pt-4">
-                  <Button to="/login" variant="ghost" size="sm" className="flex-1" onClick={() => setOpen(false)}>
+                  <Button to="/login" variant="glass" size="sm" className="flex-1" onClick={() => setOpen(false)}>
                     Sign in
                   </Button>
-                  <Button to="/signup" variant="primary" size="sm" className="flex-1" onClick={() => setOpen(false)}>
+                  <Button to="/signup" variant="light" size="sm" className="flex-1" onClick={() => setOpen(false)}>
                     Get started
                   </Button>
                 </div>

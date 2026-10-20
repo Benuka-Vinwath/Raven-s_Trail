@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import PageHero from "../components/layout/PageHero";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
@@ -32,16 +33,12 @@ export default function Rentals() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-5 py-12">
-      <p className="text-clay-600 font-medium text-sm mb-2">Equipment rental</p>
-      <h1 className="font-display text-4xl text-ink-900">Reserve tents, packs and camping gear</h1>
-      <p className="mt-3 text-ink-700/80 leading-relaxed max-w-2xl">
-        Gear from partner shops near popular trailheads — browse everything here, or book straight from a
-        trail's page for shops along that specific route.
-      </p>
+    <>
+      <PageHero page="rentals" title="Gear up" dim="for the trail" blurb="Gear from partner shops near popular trailheads — browse everything here, or book straight from a trail's page for shops along that specific route." />
+    <div className="max-w-6xl mx-auto px-5 pb-16">
 
       {error && (
-        <div className="mt-8 border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded p-4 text-sm">{error}</div>
+        <div className="mt-8 border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded-2xl p-4 text-sm">{error}</div>
       )}
 
       {loading && !error && <p className="mt-8 text-sm text-ink-700/60">Loading gear shops…</p>}
@@ -95,5 +92,6 @@ export default function Rentals() {
         </>
       )}
     </div>
+    </>
   );
 }

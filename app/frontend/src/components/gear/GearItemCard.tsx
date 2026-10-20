@@ -12,7 +12,7 @@ interface GearItemCardProps {
 
 export default function GearItemCard({ item, inCart, onToggle, metaLine }: GearItemCardProps) {
   return (
-    <div className="group border border-ink-900/10 rounded p-5 flex flex-col hover:border-forest-500/40 hover:shadow-elevate hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth">
+    <div className="group border border-ink-900/10 rounded-2xl p-5 flex flex-col hover:border-forest-500/40 hover:shadow-elevate reveal hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth">
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-xs text-ink-700/60">{item.category}</p>

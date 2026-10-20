@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useMemo, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   MapPin,
   Tent,
@@ -10,18 +9,22 @@ import {
   CloudSun,
   Images,
   ArrowRight,
-  Search,
+  ArrowUpRight,
   Star,
 } from "lucide-react";
 import Button from "../components/ui/Button";
+import CountUp from "../components/ui/CountUp";
+import Reveal from "../components/ui/Reveal";
+import PhotoMarquee from "../components/ui/PhotoMarquee";
 import SectionHeading from "../components/ui/SectionHeading";
-import RidgeIllustration from "../components/illustrations/RidgeIllustration";
 import TrailCard from "../components/trails/TrailCard";
+import { Link } from "react-router-dom";
 import { useTrails } from "../hooks/useTrails";
 import { useGearShops } from "../hooks/useGearShops";
 import { useParkingSpots } from "../hooks/useParkingSpots";
 import { useRecentReviews } from "../hooks/useReviews";
 import { useAuth } from "../context/AuthContext";
+import { heroPhoto } from "../lib/photos";
 
 const FEATURES = [
   { icon: MapPin, title: "Hiking locations", body: "Search trails by district, elevation and difficulty across the island." },
@@ -33,135 +36,193 @@ const FEATURES = [
   { icon: Images, title: "Photos & reviews", body: "Real trip reports and condition notes from hikers who went before you." },
 ];
 
-const heroContainer = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
-};
-
-const heroItem = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const } },
-};
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Home() {
-  const [query, setQuery] = useState("");
-  const navigate = useNavigate();
   const { user } = useAuth();
-
   const { data: trails } = useTrails();
   const { data: gearShops } = useGearShops();
   const { data: parkingSpots } = useParkingSpots();
   const { data: recentReviews } = useRecentReviews(2);
 
+  const hero = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: hero, offset: ["start start", "end start"] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
   const featured = useMemo(
     () => [...(trails ?? [])].sort((a, b) => b.rating - a.rating).slice(0, 3),
     [trails]
   );
+  const top = featured[0];
+  const reviewTotal = (trails ?? []).reduce((sum, t) => sum + t.reviewCount, 0);
+  const avgRating = trails?.length ? trails.reduce((sum, t) => sum + t.rating, 0) / trails.length : 0;
   const districtCount = new Set((trails ?? []).map((t) => t.district)).size;
   const gearItemCount = (gearShops ?? []).reduce((sum, shop) => sum + shop.items.length, 0);
 
   const stats = [
-    { value: String((trails ?? []).length), label: "Trails mapped" },
-    { value: String(districtCount), label: "Districts covered" },
-    { value: String(gearItemCount), label: "Gear rentals" },
-    { value: String((parkingSpots ?? []).length), label: "Parking sites" },
+    { icon: MapPin, value: (trails ?? []).length, label: "Trails mapped" },
+    { icon: MapIcon, value: districtCount, label: "Districts covered" },
+    { icon: Tent, value: gearItemCount, label: "Gear items to rent" },
+    { icon: SquareParking, value: (parkingSpots ?? []).length, label: "Parking sites" },
   ];
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    navigate(query ? `/trails?q=${encodeURIComponent(query)}` : "/trails");
-  }
 
   return (
     <>
       {/* Hero */}
-      <section className="contour-bg border-b border-ink-900/10">
+      <section ref={hero} className="relative -mt-[4.25rem] min-h-[100svh] overflow-hidden bg-pine-950 text-white">
+        <motion.img
+          src={heroPhoto()}
+          alt="Mist rolling through a Sri Lankan hill forest"
+          style={{ y: bgY }}
+          className="absolute inset-x-0 -top-1/4 h-[125%] w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#16394a]/70 via-[#16394a]/45 to-pine-950/85" />
+        <div className="pointer-events-none absolute inset-2 rounded-[2rem] border-2 border-white/25 sm:rounded-[2.75rem]" />
+
         <motion.div
-          variants={heroContainer}
-          initial="hidden"
-          animate="show"
-          className="max-w-6xl mx-auto px-5 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 items-center"
+          style={{ y: contentY, opacity: contentOpacity }}
+          className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col px-8 pb-14 pt-32 sm:px-12"
         >
-          <div>
-            <motion.h1
-              variants={heroItem}
-              className="font-display text-[2.75rem] sm:text-6xl leading-[1.05] text-ink-900"
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease }}
+            className="font-body text-[3.4rem] font-light leading-[0.95] tracking-tight sm:text-7xl lg:text-[7rem]"
+          >
+            Sri Lanka's
+            <br />
+            <span className="text-white/45">Wildest</span>
+            <br />
+            Trails
+          </motion.h1>
+
+          <div className="mt-auto grid items-end gap-8 pt-12 lg:grid-cols-[1fr_auto_23rem]">
+            <motion.p
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.3, ease }}
+              className="max-w-[17rem] text-sm leading-relaxed text-white/75"
             >
-              Sri Lanka's hiking companion, from trailhead to summit.
-            </motion.h1>
-            <motion.p variants={heroItem} className="mt-6 text-lg text-ink-700/85 leading-relaxed max-w-lg">
-              Plan routes, book gear, track weather and budget — one trail-tested app for every hike on the
-              island, built for the way Sri Lanka's trails actually work.
+              Discover handpicked hiking routes across the hill country. Book gear, park safely and plan your
+              budget before you ever lace up.
             </motion.p>
 
-            <motion.form
-              variants={heroItem}
-              onSubmit={handleSearch}
-              className="mt-8 flex flex-col sm:flex-row gap-3 max-w-lg"
-            >
-              <label className="relative flex-1">
-                <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-700/50" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  type="text"
-                  placeholder="Search trails, e.g. Ella or Knuckles"
-                  className="w-full pl-10 pr-4 py-3 rounded border border-ink-900/15 bg-parchment-50 text-ink-900 placeholder:text-ink-700/40 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
-                />
-              </label>
-              <Button type="submit" size="md" className="shrink-0">
-                Explore trails
-                <ArrowRight size={16} />
-              </Button>
-            </motion.form>
+            {trails && (
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.45, ease }}
+                className="lg:pb-1"
+              >
+                <p className="flex items-center gap-2 text-4xl font-light">
+                  <Star size={22} className="fill-gold-400 text-gold-400" />
+                  {avgRating.toFixed(1)}
+                </p>
+                <p className="mt-1 text-sm text-white/75">from {reviewTotal.toLocaleString()}+ hiker reviews</p>
+              </motion.div>
+            )}
 
-            <motion.dl variants={heroItem} className="mt-12 flex flex-wrap gap-x-10 gap-y-4">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <dt className="font-display text-2xl text-forest-700">{s.value}</dt>
-                  <dd className="text-sm text-ink-700/70">{s.label}</dd>
+            {top && (
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.55, ease }}
+                className="rounded-3xl border border-white/15 bg-white/10 p-6 backdrop-blur-2xl"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm text-white/60">Top rated · {top.district}</p>
+                    <h2 className="mt-1 text-2xl font-light leading-snug">{top.name}</h2>
+                  </div>
+                  <Link
+                    to={`/trails/${top.slug}`}
+                    aria-label={`Open ${top.name}`}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 transition-colors duration-300 hover:bg-white/25"
+                  >
+                    <ArrowUpRight size={16} />
+                  </Link>
                 </div>
-              ))}
-            </motion.dl>
-          </div>
 
-          <motion.div
-            variants={heroItem}
-            className="rounded overflow-hidden border border-ink-900/10 shadow-elevate"
-          >
-            <RidgeIllustration variant="dawn" className="w-full h-[22rem] object-cover" />
-          </motion.div>
+                <div className="mt-5 grid grid-cols-2 gap-2 text-sm">
+                  <div className="rounded-xl bg-black/20 px-3 py-2.5">
+                    <p className="text-xs text-white/50">Peak</p>
+                    {top.peakElevationM} m
+                  </div>
+                  <div className="rounded-xl bg-black/20 px-3 py-2.5">
+                    <p className="text-xs text-white/50">Best season</p>
+                    {top.bestSeason}
+                  </div>
+                </div>
+
+                <div className="mt-5 flex items-end justify-between">
+                  <p className="text-3xl font-light">
+                    {top.distanceKm} km<span className="text-base text-white/60"> / {top.durationHrs}h</span>
+                  </p>
+                  <p className="text-sm capitalize text-white/75">{top.difficulty}</p>
+                </div>
+                <Button to={`/trails/${top.slug}`} variant="light" className="mt-5 w-full">
+                  Plan this hike
+                </Button>
+              </motion.div>
+            )}
+          </div>
         </motion.div>
       </section>
 
+      {/* Stats */}
+      {trails && gearShops && parkingSpots && (
+        <section className="bg-pine-950 pt-20">
+          <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-6 sm:grid-cols-4">
+            {stats.map((s, i) => (
+              <Reveal key={s.label} delay={i * 0.1}>
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+                  <s.icon size={20} className="text-gold-400" />
+                  <dt className="mt-6 font-body text-6xl font-light text-white">
+                    <CountUp to={s.value} />
+                  </dt>
+                  <dd className="mt-1 text-sm text-white/60">{s.label}</dd>
+                </div>
+              </Reveal>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <PhotoMarquee />
+
       {/* Core features */}
-      <section className="max-w-6xl mx-auto px-5 py-20">
-        <SectionHeading
-          eyebrow="What's inside"
-          title="Everything a hike in Sri Lanka actually needs"
-          description="Hikers currently stitch together maps, forums, rental shops and weather apps by hand. Raven's Trail puts the whole journey in one place."
-        />
+      <section className="mx-auto max-w-6xl px-5 py-24">
+        <Reveal>
+          <SectionHeading
+            eyebrow="What's inside"
+            title="Everything a hike in Sri Lanka actually needs"
+            description="Hikers currently stitch together maps, forums, rental shops and weather apps by hand. Raven's Trail puts the whole journey in one place."
+          />
+        </Reveal>
 
         <div className="mt-12 grid md:grid-cols-2">
           {FEATURES.map((f, i) => {
             const lastRow = Math.floor(i / 2) === Math.floor((FEATURES.length - 1) / 2);
             const leftCol = i % 2 === 0;
             return (
-              <div
+              <Reveal
                 key={f.title}
-                className={`group flex gap-4 py-6 md:py-7 md:px-7 border-ink-900/10 transition-colors duration-300 ease-smooth hover:bg-forest-600/5 ${
+                delay={(i % 2) * 0.1}
+                className={`group flex gap-4 border-ink-900/10 py-6 transition-colors duration-300 ease-smooth hover:bg-forest-600/5 md:px-7 md:py-7 ${
                   leftCol ? "md:border-r" : ""
                 } ${lastRow ? "" : "border-b"}`}
               >
                 <f.icon
                   size={22}
-                  className="text-clay-600 shrink-0 mt-0.5 transition-transform duration-300 ease-smooth group-hover:scale-110 group-hover:-rotate-6"
+                  className="mt-0.5 shrink-0 text-clay-600 transition-transform duration-300 ease-smooth group-hover:-rotate-6 group-hover:scale-110"
                 />
                 <div>
                   <h3 className="font-medium text-ink-900">{f.title}</h3>
-                  <p className="mt-1 text-sm text-ink-700/75 leading-relaxed">{f.body}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-ink-700/75">{f.body}</p>
                 </div>
-              </div>
+              </Reveal>
             );
           })}
         </div>
@@ -169,19 +230,21 @@ export default function Home() {
 
       {/* Trail explorer teaser */}
       {featured.length > 0 && (
-        <section className="bg-parchment-100/50 border-y border-ink-900/10">
-          <div className="max-w-6xl mx-auto px-5 py-20">
-            <div className="flex flex-wrap items-end justify-between gap-4">
+        <section className="border-y border-ink-900/10 bg-parchment-100/50">
+          <div className="mx-auto max-w-6xl px-5 py-24">
+            <Reveal className="flex flex-wrap items-end justify-between gap-4">
               <SectionHeading eyebrow="Top rated" title="Start with a trail hikers keep coming back to" />
               <Button to="/trails" variant="ghost" size="sm">
                 View all trails
                 <ArrowRight size={15} />
               </Button>
-            </div>
+            </Reveal>
 
-            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featured.map((t) => (
-                <TrailCard key={t.id} trail={t} />
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {featured.map((t, i) => (
+                <Reveal key={t.id} delay={i * 0.12}>
+                  <TrailCard trail={t} />
+                </Reveal>
               ))}
             </div>
           </div>
@@ -190,54 +253,49 @@ export default function Home() {
 
       {/* Community teaser */}
       {recentReviews && recentReviews.length > 0 && (
-        <section className="max-w-6xl mx-auto px-5 py-20">
-          <SectionHeading eyebrow="From the community" title="Trip reports from hikers on the ground" />
-          <div className="mt-10 grid sm:grid-cols-2 gap-6">
-            {recentReviews.map((r) => (
-              <div
-                key={r.id}
-                className="border border-ink-900/10 rounded p-6 bg-parchment-100/40 hover:border-forest-500/40 hover:shadow-elevate hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="font-medium text-ink-900">{r.author}</p>
-                  <div className="flex items-center gap-1 text-sm text-ink-700">
-                    <Star size={14} className="fill-gold-500 text-gold-500" />
-                    {r.rating}
+        <section className="mx-auto max-w-6xl px-5 py-24">
+          <Reveal>
+            <SectionHeading eyebrow="From the community" title="Trip reports from hikers on the ground" />
+          </Reveal>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2">
+            {recentReviews.map((r, i) => (
+              <Reveal key={r.id} delay={i * 0.12}>
+                <div className="rounded-3xl border border-ink-900/10 bg-parchment-100/40 p-6 transition-[border-color,box-shadow,transform] duration-300 ease-smooth hover:-translate-y-1 hover:border-forest-500/40 hover:shadow-elevate">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-ink-900">{r.author}</p>
+                    <div className="flex items-center gap-1 text-sm text-ink-700">
+                      <Star size={14} className="fill-gold-500 text-gold-500" />
+                      {r.rating}
+                    </div>
                   </div>
+                  <p className="mt-0.5 text-xs text-ink-700/60">{r.trailName}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-700/85">{r.text}</p>
                 </div>
-                <p className="text-xs text-ink-700/60 mt-0.5">{r.trailName}</p>
-                <p className="mt-3 text-sm text-ink-700/85 leading-relaxed">{r.text}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
       )}
 
       {/* CTA */}
-      <section className="bg-pine-950">
-        <div className="max-w-6xl mx-auto px-5 py-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <section className="relative overflow-hidden bg-pine-950">
+        <img src={heroPhoto(1600)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-30" />
+        <Reveal className="relative mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-24 sm:flex-row sm:items-center">
           <div>
-            <h2 className="font-display text-3xl text-parchment-50">
+            <h2 className="font-display text-3xl text-parchment-50 sm:text-4xl">
               {user ? "Ready for your next summit?" : "Ready to plan your next summit?"}
             </h2>
-            <p className="mt-2 text-mist-100/70 max-w-md">
+            <p className="mt-2 max-w-md text-mist-100/75">
               {user
                 ? "Browse trails, book gear and plan your budget for your next hike."
                 : "Create a free account to save trails, track your rentals and plan your hiking budget."}
             </p>
           </div>
-          {user ? (
-            <Button to="/trails" size="md">
-              Explore trails
-              <ArrowRight size={16} />
-            </Button>
-          ) : (
-            <Button to="/signup" size="md">
-              Get started
-              <ArrowRight size={16} />
-            </Button>
-          )}
-        </div>
+          <Button to={user ? "/trails" : "/signup"} variant="light" size="md">
+            {user ? "Explore trails" : "Get started"}
+            <ArrowRight size={16} />
+          </Button>
+        </Reveal>
       </section>
     </>
   );

@@ -7,7 +7,7 @@ export default function WeatherPanel({ trail }: { trail: Trail }) {
   const { data, loading, error } = useWeather(trail.startPoint[0], trail.startPoint[1]);
 
   if (error) {
-    return <div className="border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded p-4 text-sm">{error}</div>;
+    return <div className="border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded-2xl p-4 text-sm">{error}</div>;
   }
 
   if (loading || !data) {
@@ -22,7 +22,7 @@ export default function WeatherPanel({ trail }: { trail: Trail }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="border border-ink-900/10 rounded p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between">
+        <div className="border border-ink-900/10 rounded-2xl p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between">
           <div>
             <p className="text-sm text-ink-700/60">
               {trail.name}, {trail.district} · {trail.peakElevationM} m peak elevation
@@ -53,7 +53,7 @@ export default function WeatherPanel({ trail }: { trail: Trail }) {
           {data.daily.map((d) => (
             <div
               key={d.date}
-              className="border border-ink-900/10 rounded p-3 text-center hover:border-forest-500/40 hover:shadow-elevate hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth"
+              className="border border-ink-900/10 rounded-2xl p-3 text-center hover:border-forest-500/40 hover:shadow-elevate reveal hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth"
             >
               <p className="text-xs text-ink-700/60">
                 {new Date(d.date).toLocaleDateString(undefined, { weekday: "short" })}

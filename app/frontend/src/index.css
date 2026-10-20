@@ -18,6 +18,13 @@
   --color-forest-500: #3f6a45;
   --color-forest-400: #56845b;
 
+  --animate-marquee: marquee 50s linear infinite;
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
   /* Moss / mist — muted supporting greens */
   --color-moss-300: #8fa88f;
   --color-mist-200: #c7d1c2;
@@ -48,6 +55,10 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -66,19 +77,56 @@ body {
   outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/* Cards glide up as they scroll into view (scroll-driven where supported, plain on-load fade elsewhere).
+   Uses `translate` so it never fights the hover-lift `transform`. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    translate: 0 40px;
   }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  to {
+    opacity: 1;
+    translate: 0 0;
   }
+}
+.reveal {
+  animation: reveal-up 0.9s var(--ease-smooth) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 40%;
 }
 
 .font-display {
   font-family: var(--font-display);
+}
+
+/* Inner pages: bright and airy. Re-pointing the tokens brightens every existing component at once
+   (white cards, fresher greens) over soft mint / gold / sky glows. */
+.surface-light {
+  --color-ink-900: #14241d;
+  --color-ink-700: #2b3d34;
+  --color-parchment-50: #ffffff;
+  --color-parchment-100: #ffffff;
+  --color-parchment-200: #dfece4;
+  --color-forest-700: #1f5a45;
+  --color-forest-600: #2a7a5b;
+  --color-forest-500: #3a9b72;
+  color: var(--color-ink-900);
+  background-color: #f6faf6;
+  background-image:
+    radial-gradient(50rem 26rem at 90% -5%, rgb(125 211 170 / 0.32), transparent),
+    radial-gradient(40rem 24rem at 0% 40%, rgb(255 214 140 / 0.3), transparent),
+    radial-gradient(40rem 24rem at 100% 85%, rgb(147 197 253 / 0.28), transparent);
+}
+.surface-light .rounded-2xl.border,
+.surface-light .rounded-3xl.border {
+  box-shadow: 0 10px 30px -16px rgb(20 36 29 / 0.22);
+}
+
+/* Keep browser autofill from painting inputs light blue on the dark auth cards. */
+.auth-input:-webkit-autofill {
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  box-shadow: 0 0 0 1000px #2a4b55 inset;
 }
 
 .leaflet-container {

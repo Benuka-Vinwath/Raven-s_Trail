@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import PageHero from "../components/layout/PageHero";
 import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -68,29 +69,27 @@ export default function Trails() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-5 py-12">
-      <div className="max-w-2xl">
-        <p className="text-clay-600 font-medium text-sm mb-2">Trail explorer</p>
-        <h1 className="font-display text-4xl text-ink-900">Find a trail by district, elevation and difficulty</h1>
-        <p className="mt-3 text-ink-700/80 leading-relaxed">
-          {(trails ?? []).length} routes mapped across {DISTRICTS.length} districts, from a gentle tea-estate walk
-          to a multi-day rainforest traverse.
-        </p>
-      </div>
-
-      <div className="mt-8 relative max-w-md">
+    <>
+    <PageHero
+      page="trails"
+      title="Find your"
+      dim="next trail"
+      blurb={`${(trails ?? []).length} routes mapped across ${DISTRICTS.length} districts, from a gentle tea-estate walk to a multi-day rainforest traverse. Filter by district, elevation and difficulty.`}
+    />
+    <div className="max-w-6xl mx-auto px-5 pb-16">
+      <div className="relative max-w-md">
         <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-700/50" />
         <input
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           type="text"
           placeholder="Search by trail, district or tag"
-          className="w-full pl-10 pr-4 py-2.5 rounded border border-ink-900/15 bg-parchment-50 text-ink-900 placeholder:text-ink-700/40 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
+          className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-ink-900/15 bg-parchment-50 text-ink-900 placeholder:text-ink-700/40 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
         />
       </div>
 
       {error && (
-        <div className="mt-8 border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded p-4 text-sm">{error}</div>
+        <div className="mt-8 border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded-2xl p-4 text-sm">{error}</div>
       )}
 
       {loading && !error && <p className="mt-8 text-sm text-ink-700/60">Loading trails…</p>}
@@ -127,7 +126,7 @@ export default function Trails() {
                       type="checkbox"
                       checked={districts.has(d)}
                       onChange={() => toggleDistrict(d)}
-                      className="h-4 w-4 rounded border-ink-900/25 accent-forest-600 transition-transform duration-150 ease-smooth"
+                      className="h-4 w-4 rounded-2xl border-ink-900/25 accent-forest-600 transition-transform duration-150 ease-smooth"
                     />
                     {d}
                   </label>
@@ -140,7 +139,7 @@ export default function Trails() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as typeof sort)}
-                className="mt-3 w-full rounded border border-ink-900/15 bg-parchment-50 px-3 py-2 text-sm text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
+                className="mt-3 w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2 text-sm text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
               >
                 <option value="rating">Highest rated</option>
                 <option value="elevation">Highest elevation</option>
@@ -148,13 +147,13 @@ export default function Trails() {
               </select>
             </div>
 
-            <div className="h-56 rounded overflow-hidden border border-ink-900/10 hidden lg:block">
+            <div className="h-56 rounded-2xl overflow-hidden border border-ink-900/10 hidden lg:block">
               <TrailsMap trails={filtered} />
             </div>
           </aside>
 
           <div>
-            <div className="lg:hidden h-48 rounded overflow-hidden border border-ink-900/10 mb-6">
+            <div className="lg:hidden h-48 rounded-2xl overflow-hidden border border-ink-900/10 mb-6">
               <TrailsMap trails={filtered} />
             </div>
 
@@ -163,7 +162,7 @@ export default function Trails() {
             </p>
 
             {filtered.length === 0 ? (
-              <div className="border border-dashed border-ink-900/20 rounded p-10 text-center">
+              <div className="border border-dashed border-ink-900/20 rounded-2xl p-10 text-center">
                 <p className="text-ink-900 font-medium">No trails match those filters</p>
                 <p className="mt-1 text-sm text-ink-700/70">Try clearing a filter or searching a different district.</p>
               </div>
@@ -180,5 +179,6 @@ export default function Trails() {
         </div>
       )}
     </div>
+    </>
   );
 }

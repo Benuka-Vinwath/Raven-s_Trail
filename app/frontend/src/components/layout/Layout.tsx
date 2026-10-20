@@ -9,7 +9,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1">
+      <main className={location.pathname === "/" ? "flex-1" : "flex-1 surface-light"}>
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 10 }}

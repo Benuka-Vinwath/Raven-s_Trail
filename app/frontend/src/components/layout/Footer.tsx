@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import RavenMark from "../icons/RavenMark";
+import { heroPhoto } from "../../lib/photos";
 
 const COLUMNS = [
   {
@@ -28,8 +29,10 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-pine-950 text-mist-100">
-      <div className="max-w-6xl mx-auto px-5 py-14 grid grid-cols-2 md:grid-cols-5 gap-10">
+    <footer className="relative overflow-hidden border-t border-white/10 bg-pine-950 text-mist-100">
+      <img src={heroPhoto(1600)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-b from-pine-950/70 to-pine-950/95" />
+      <div className="relative max-w-6xl mx-auto px-6 py-16 grid grid-cols-2 md:grid-cols-5 gap-10">
         <div className="col-span-2">
           <div className="flex items-center gap-2">
             <RavenMark className="h-6 w-6 text-gold-400" />
@@ -56,8 +59,8 @@ export default function Footer() {
           </div>
         ))}
       </div>
-      <div className="border-t border-parchment-50/10">
-        <div className="max-w-6xl mx-auto px-5 py-5 flex flex-col sm:flex-row gap-2 justify-between text-xs text-mist-100/50">
+      <div className="relative border-t border-parchment-50/10">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex flex-col sm:flex-row gap-2 justify-between text-xs text-mist-100/50">
           <p>© 2026 Raven's Trail. Built for hikers, not algorithms.</p>
           <p>Made in Sri Lanka</p>
         </div>

@@ -1,4 +1,5 @@
 import { ShieldCheck, Car } from "lucide-react";
+import PageHero from "../components/layout/PageHero";
 import TrailsMap from "../components/trails/TrailsMap";
 import { useParkingSpots } from "../hooks/useParkingSpots";
 import { useTrails } from "../hooks/useTrails";
@@ -8,15 +9,12 @@ export default function Parking() {
   const { data: trails } = useTrails();
 
   return (
-    <div className="max-w-6xl mx-auto px-5 py-12">
-      <p className="text-clay-600 font-medium text-sm mb-2">Parking</p>
-      <h1 className="font-display text-4xl text-ink-900">Secure parking near the trailhead</h1>
-      <p className="mt-3 text-ink-700/80 leading-relaxed max-w-2xl">
-        Pricing and capacity for parking at the most popular trailheads, so you know before you drive up.
-      </p>
+    <>
+      <PageHero page="parking" title="Park safely" dim="near the trailhead" blurb="Pricing and capacity for parking at the most popular trailheads, so you know before you drive up." />
+    <div className="max-w-6xl mx-auto px-5 pb-16">
 
       {error && (
-        <div className="mt-8 border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded p-4 text-sm">{error}</div>
+        <div className="mt-8 border border-clay-600/30 bg-clay-100/40 text-clay-700 rounded-2xl p-4 text-sm">{error}</div>
       )}
 
       {loading && !error && <p className="mt-8 text-sm text-ink-700/60">Loading parking…</p>}
@@ -27,7 +25,7 @@ export default function Parking() {
             {parkingSpots.map((p) => (
               <div
                 key={p.id}
-                className="border border-ink-900/10 rounded p-5 flex items-start justify-between gap-4 flex-wrap hover:border-forest-500/40 hover:shadow-elevate hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth"
+                className="border border-ink-900/10 rounded-2xl p-5 flex items-start justify-between gap-4 flex-wrap hover:border-forest-500/40 hover:shadow-elevate reveal hover:-translate-y-1 transition-[border-color,box-shadow,transform] duration-300 ease-smooth"
               >
                 <div>
                   <div className="flex items-center gap-2">
@@ -55,7 +53,7 @@ export default function Parking() {
             ))}
           </div>
 
-          <aside className="h-72 lg:h-full rounded overflow-hidden border border-ink-900/10 lg:sticky lg:top-24">
+          <aside className="h-72 lg:h-full rounded-2xl overflow-hidden border border-ink-900/10 lg:sticky lg:top-24">
             <TrailsMap
               trails={(trails ?? []).filter((t) => parkingSpots.some((p) => p.nearTrail === t.name))}
               parking={parkingSpots}
@@ -64,5 +62,6 @@ export default function Parking() {
         </div>
       )}
     </div>
+    </>
   );
 }

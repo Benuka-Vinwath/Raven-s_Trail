@@ -48,7 +48,7 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
               min={1}
               value={people}
               onChange={(e) => setPeople(Math.max(1, Number(e.target.value)))}
-              className="w-full rounded border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
+              className="w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
             />
           </Field>
           <Field label="Days">
@@ -57,7 +57,7 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
               min={1}
               value={days}
               onChange={(e) => setDays(Math.max(1, Number(e.target.value)))}
-              className="w-full rounded border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
+              className="w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
             />
           </Field>
         </div>
@@ -70,7 +70,7 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
                 onClick={() => setTransport(opt.id)}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className={`rounded border px-3 py-2.5 text-sm text-left transition-colors duration-200 ease-smooth ${
+                className={`rounded-2xl border px-3 py-2.5 text-sm text-left transition-colors duration-200 ease-smooth ${
                   transport === opt.id
                     ? "border-forest-600 bg-forest-600/10 text-forest-700"
                     : "border-ink-900/15 text-ink-700 hover:border-forest-500/40"
@@ -90,7 +90,7 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
               min={0}
               value={foodPerDay}
               onChange={(e) => setFoodPerDay(Math.max(0, Number(e.target.value)))}
-              className="w-full rounded border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
+              className="w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
             />
           </Field>
           <Field label="Gear rental, per day (LKR)">
@@ -99,7 +99,7 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
               min={0}
               value={gearPerDay}
               onChange={(e) => setGearPerDay(Math.max(0, Number(e.target.value)))}
-              className="w-full rounded border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
+              className="w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
             />
           </Field>
         </div>
@@ -111,14 +111,14 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
               min={0}
               value={parkingDays}
               onChange={(e) => setParkingDays(Math.max(0, Number(e.target.value)))}
-              className="w-32 rounded border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
+              className="w-32 rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
             />
             <span className="ml-2 text-sm text-ink-700/60">days</span>
           </Field>
         )}
       </div>
 
-      <aside className="border border-ink-900/10 rounded p-6 h-fit lg:sticky lg:top-24">
+      <aside className="border border-ink-900/10 rounded-2xl p-6 h-fit lg:sticky lg:top-24">
         <h2 className="font-medium text-ink-900">Estimated total</h2>
         <motion.p
           key={breakdown.total}
