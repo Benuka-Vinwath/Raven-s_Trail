@@ -73,7 +73,7 @@ export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section ref={hero} className="relative -mt-[4.25rem] min-h-[100svh] overflow-hidden bg-pine-950 text-white">
+      <section ref={hero} className="relative -mt-[4.5rem] min-h-[100svh] overflow-hidden bg-pine-950 text-white">
         <motion.img
           src={heroPhoto()}
           alt="Mist rolling through a Sri Lankan hill forest"

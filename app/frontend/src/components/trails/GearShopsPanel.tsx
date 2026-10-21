@@ -2,15 +2,17 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Star, MapPin, Phone, Globe } from "lucide-react";
 import { useGearShops } from "../../hooks/useGearShops";
-import { useGearCart } from "../../hooks/useGearCart";
+import { useTripCart } from "../../hooks/useTripCart";
+import { useAuth } from "../../context/AuthContext";
 import GearItemCard from "../gear/GearItemCard";
-import ReservationSummary from "../gear/ReservationSummary";
+import TripCart from "../gear/TripCart";
 import type { Trail } from "../../types";
 
 export default function GearShopsPanel({ trail }: { trail: Trail }) {
   const { data: shops, loading, error } = useGearShops(trail.slug);
   const allItems = (shops ?? []).flatMap((s) => s.items);
-  const { cartItems, total, toggle, setDays, cart } = useGearCart(allItems);
+  const { token } = useAuth();
+  const cart = useTripCart(trail.slug, allItems, token);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -117,8 +119,8 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
                         <GearItemCard
                           key={item.id}
                           item={item}
-                          inCart={Boolean(cart[item.id])}
-                          onToggle={() => toggle(item.id)}
+                          inCart={Boolean(cart.cart.items[item.id])}
+                          onToggle={() => cart.toggle(item.id)}
                         />
                       ))}
                     </div>
@@ -130,7 +132,7 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
         })}
       </div>
 
-      <ReservationSummary cartItems={cartItems} total={total} onSetDays={setDays} title="Gear reservation" />
+      <TripCart trail={trail} cart={cart} />
     </div>
   );
 }

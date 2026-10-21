@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import PageHero from "../components/layout/PageHero";
 import { Star } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -15,7 +16,9 @@ export default function Community() {
   const { data: trails } = useTrails();
   const { data: reviews, loading: reviewsLoading, error: reviewsError, refetch } = useRecentReviews(30);
 
-  const [trailSlug, setTrailSlug] = useState<string | null>(null);
+  // /community?trail=<slug> opens the review form on that trail (used by "Review this trail" in My Trips)
+  const [params] = useSearchParams();
+  const [trailSlug, setTrailSlug] = useState<string | null>(params.get("trail"));
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);

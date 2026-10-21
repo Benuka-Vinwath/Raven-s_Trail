@@ -1,4 +1,4 @@
-import type { Trail, GearShop, ParkingSpot, Review, RecentReview, User } from "../types";
+import type { Trail, GearShop, ParkingSpot, Review, RecentReview, User, Trip, Booking } from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -11,7 +11,7 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   token?: string | null;
 }
@@ -102,3 +102,99 @@ export const reviewsApi = {
   create: (slug: string, body: { rating: number; text: string; tags?: string[] }, token: string) =>
     request<Review>(`/trails/${slug}/reviews`, { method: "POST", body, token }),
 };
+
+export interface CartData {
+  startDate: string | null;
+  endDate: string | null;
+  items: { itemId: string; quantity: number }[];
+}
+
+export const tripsApi = {
+  list: (token: string) => request<Trip[]>("/trips", { token }),
+  create: (
+    body: {
+      trailSlug: string;
+      hikers: number;
+      days: number;
+      transport: "bus" | "train" | "van" | "own";
+      foodPerDay: number;
+      gearPerDay: number;
+      parkingDays?: number;
+      startDate?: string;
+      notes?: string;
+    },
+    token: string
+  ) => request<Trip>("/trips", { method: "POST", body, token }),
+  remove: (id: string, token: string) => request<void>(`/trips/${id}`, { method: "DELETE", token }),
+};
+
+export const cartApi = {
+  get: (slug: string, token: string) => request<CartData>(`/cart/${slug}`, { token }),
+  put: (slug: string, body: CartData, token: string) => request<void>(`/cart/${slug}`, { method: "PUT", body, token }),
+  checkout: (slug: string, hikers: number, token: string) =>
+    request<Booking>(`/cart/${slug}/checkout`, { method: "POST", body: { hikers }, token }),
+};
+
+export const bookingsApi = {
+  get: (id: string, token: string) => request<Booking>(`/bookings/${id}`, { token }),
+  cancel: (id: string, token: string) => request<Booking>(`/bookings/${id}/cancel`, { method: "POST", token }),
+};
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  text: string;
+}
+
+export interface ChatHandlers {
+  onText: (text: string) => void;
+  onStatus: (text: string) => void;
+}
+
+// The server answers with server-sent events (`data: {...}` lines), so this reads the body as a stream
+// instead of using request(), which waits for the whole JSON body.
+async function streamChat(messages: ChatMessage[], token: string | null, handlers: ChatHandlers, signal?: AbortSignal): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ messages }),
+      signal,
+    });
+  } catch {
+    if (signal?.aborted) return;
+    throw new ApiError(0, "Can't reach the server. Is the API running?");
+  }
+
+  // problems before the stream starts (validation, rate limit) come back as normal JSON errors
+  if (!res.ok || !res.body) {
+    const data = await res.json().catch(() => null);
+    throw new ApiError(res.status, data?.error ?? `Request failed (${res.status})`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) return;
+      buffer += decoder.decode(value, { stream: true });
+      let end: number;
+      while ((end = buffer.indexOf("\n\n")) >= 0) {
+        const line = buffer.slice(0, end);
+        buffer = buffer.slice(end + 2);
+        if (!line.startsWith("data:")) continue;
+        const event = JSON.parse(line.slice(5));
+        if (event.type === "text") handlers.onText(event.text);
+        else if (event.type === "status") handlers.onStatus(event.text);
+        else if (event.type === "error") throw new ApiError(502, event.message);
+      }
+    }
+  } catch (err) {
+    if (signal?.aborted) return;
+    throw err;
+  }
+}
+
+export const chatApi = { stream: streamChat };

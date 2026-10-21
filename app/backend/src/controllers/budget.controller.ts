@@ -3,6 +3,7 @@ import { z } from "zod";
 import { env } from "../config/env.js";
 import { pool } from "../db/pool.js";
 import { ApiError } from "../utils/errors.js";
+import { callGemini } from "../utils/gemini.js";
 import type { AuthedRequest } from "../middleware/auth.js";
 
 const money = z.number().min(0).max(10_000_000);
@@ -83,37 +84,10 @@ Reply with:
 - "packing": 6 to 12 short items to bring or rent, suited to this trail, the season and the tags.
 Do not change or recompute the totals, and do not invent exact prices for items not listed above.`;
 
-  let upstream: globalThis.Response;
-  try {
-    // the free tier answers 503 "high demand" now and then; a couple of quick retries usually gets through
-    for (let attempt = 1; ; attempt++) {
-      upstream = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${env.geminiModel}:generateContent`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-goog-api-key": env.geminiApiKey },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json", responseSchema, temperature: 0.4 },
-          }),
-          signal: AbortSignal.timeout(45_000),
-        }
-      );
-      if (upstream.status !== 503 || attempt === 3) break;
-      await new Promise((r) => setTimeout(r, 1500 * attempt));
-    }
-  } catch {
-    throw new ApiError(502, "The AI service didn't respond. Try again in a moment.");
-  }
-
-  if (upstream.status === 503) throw new ApiError(503, "The AI is busy right now. Try again in a minute.");
-  if (upstream.status === 429) throw new ApiError(429, "The free AI quota is used up for now. Try again later.");
-  if (!upstream.ok) {
-    console.error("Gemini error", upstream.status, await upstream.text().catch(() => ""));
-    throw new ApiError(502, "The AI service returned an error. Try again later.");
-  }
-
-  const data: any = await upstream.json();
+  const data = await callGemini({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { responseMimeType: "application/json", responseSchema, temperature: 0.4 },
+  });
   try {
     const plan = outputSchema.parse(JSON.parse(data?.candidates?.[0]?.content?.parts?.[0]?.text ?? ""));
     res.json(plan);

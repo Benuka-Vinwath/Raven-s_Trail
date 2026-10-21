@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useParkingSpots } from "../../hooks/useParkingSpots";
-import { ApiError, budgetApi, type BudgetPlan } from "../../lib/api";
+import { Link } from "react-router-dom";
+import { ApiError, budgetApi, tripsApi, type BudgetPlan } from "../../lib/api";
 import Button from "../ui/Button";
 import type { Trail } from "../../types";
 
@@ -51,6 +52,10 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
   const [startingFrom, setStartingFrom] = useState("");
 
   const { token } = useAuth();
+  const [tripDate, setTripDate] = useState("");
+  const [tripSaved, setTripSaved] = useState(false);
+  const [tripBusy, setTripBusy] = useState(false);
+  const [tripError, setTripError] = useState<string | null>(null);
   const [ai, setAi] = useState<{ forTotal: number; plan: BudgetPlan } | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -79,6 +84,32 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
 
   const total = lines.reduce((sum, l) => sum + l.amount, 0);
   const rows = lines.map((l, i) => ({ ...l, color: COLORS[i % COLORS.length] }));
+
+  async function saveTrip() {
+    if (!token) return;
+    setTripBusy(true);
+    setTripError(null);
+    try {
+      await tripsApi.create(
+        {
+          trailSlug: trail.slug,
+          hikers: people,
+          days,
+          transport,
+          foodPerDay: STYLES[style].foodPerDay,
+          gearPerDay,
+          parkingDays,
+          startDate: tripDate || undefined,
+        },
+        token
+      );
+      setTripSaved(true);
+    } catch (err) {
+      setTripError(err instanceof ApiError ? err.message : "Couldn't save the trip. Try again.");
+    } finally {
+      setTripBusy(false);
+    }
+  }
 
   async function askAi() {
     if (!token) return;
@@ -195,6 +226,40 @@ export default function BudgetCalculator({ trail }: { trail: Trail }) {
         <p className="text-xs text-ink-700/50">
           Costs are rough estimates at Sri Lankan resident rates. Foreign visitors pay more at several parks, so check current prices.
         </p>
+
+        <div className="rounded-3xl border border-ink-900/10 bg-parchment-100/60 p-6">
+          <h2 className="font-medium text-ink-900">Save this trip</h2>
+          <p className="mt-1 text-sm text-ink-700/70">Keep it in My Trips. Add the date you're going (or went) so it shows up under upcoming or past.</p>
+          {token ? (
+            <div className="mt-4 flex flex-wrap items-end gap-3">
+              <label className="text-xs text-ink-700">
+                Start date (optional)
+                <input
+                  type="date"
+                  value={tripDate}
+                  onChange={(e) => {
+                    setTripDate(e.target.value);
+                    setTripSaved(false);
+                  }}
+                  className={`mt-1 block ${INPUT} !w-44`}
+                />
+              </label>
+              <Button onClick={saveTrip} disabled={tripBusy}>
+                {tripBusy ? "Saving…" : "Save to My Trips"}
+              </Button>
+            </div>
+          ) : (
+            <Button to="/login" variant="secondary" className="mt-4">
+              Sign in to save
+            </Button>
+          )}
+          {tripSaved && (
+            <p className="mt-3 text-sm text-forest-700">
+              Saved. <Link to="/trips" className="underline">View My Trips</Link>
+            </p>
+          )}
+          {tripError && <p className="mt-3 text-sm text-clay-700">{tripError}</p>}
+        </div>
 
         <div className="rounded-3xl border border-forest-600/25 bg-forest-600/5 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">

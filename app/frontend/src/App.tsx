@@ -10,6 +10,8 @@ import Budget from "./pages/Budget";
 import Weather from "./pages/Weather";
 import Community from "./pages/Community";
 import Profile from "./pages/Profile";
+import MyTrips from "./pages/MyTrips";
+import BookingDetail from "./pages/BookingDetail";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
@@ -30,6 +32,8 @@ export default function App() {
           <Route path="/weather" element={<Weather />} />
           <Route path="/community" element={<Community />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/trips" element={<MyTrips />} />
+          <Route path="/bookings/:id" element={<BookingDetail />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

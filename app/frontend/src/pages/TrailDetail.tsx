@@ -45,7 +45,7 @@ export default function TrailDetail() {
 
   return (
     <div>
-      <div className="h-80 sm:h-[26rem] relative -mt-[4.25rem]">
+      <div className="h-80 sm:h-[26rem] relative -mt-[4.5rem]">
         <div className="pointer-events-none absolute inset-2 z-10 rounded-[2rem] border-2 border-white/25 sm:rounded-[2.75rem]" />
         <img src={trailPhoto(trail.slug, 1800)} alt={trail.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-pine-950/80 via-pine-950/20 to-pine-950/30" />

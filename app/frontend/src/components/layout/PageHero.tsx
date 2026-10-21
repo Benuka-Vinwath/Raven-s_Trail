@@ -21,7 +21,7 @@ export default function PageHero({ page, title, dim, blurb, children }: PageHero
   const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <section ref={ref} className="relative -mt-[4.25rem] mb-12 overflow-hidden bg-pine-950 text-white">
+    <section ref={ref} className="relative -mt-[4.5rem] mb-12 overflow-hidden bg-pine-950 text-white">
       <motion.img
         src={pagePhoto(page)}
         alt=""

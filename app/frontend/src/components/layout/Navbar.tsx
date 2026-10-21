@@ -43,7 +43,7 @@ export default function Navbar() {
           <span className="font-display text-lg">Raven's Trail</span>
         </NavLink>
 
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-7">
           {LINKS.map((l) => {
             const isActive = location.pathname === l.to;
             return (
@@ -51,7 +51,7 @@ export default function Navbar() {
                 key={l.to}
                 to={l.to}
                 className={clsx(
-                  "relative py-1.5 text-sm transition-colors duration-200 ease-smooth",
+                  "relative whitespace-nowrap py-1.5 text-sm transition-colors duration-200 ease-smooth",
                   isActive ? "text-white" : "text-white/65 hover:text-white"
                 )}
               >
@@ -68,12 +68,17 @@ export default function Navbar() {
           })}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden shrink-0 items-center gap-3 whitespace-nowrap lg:flex">
           {user ? (
             <>
+              <NavLink to="/trips" className={({ isActive }) => `text-sm transition-colors ${isActive ? "text-white" : "text-white/70 hover:text-white"}`}>
+                My trips
+              </NavLink>
               <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white" title="Edit profile">
                 <Avatar name={user.name} src={user.avatarUrl} className="h-7 w-7 text-xs" />
-                Hi, <span className="font-medium text-white">{user.name.split(" ")[0]}</span>
+                <span className="hidden xl:inline">
+                  Hi, <span className="font-medium text-white">{user.name.split(" ")[0]}</span>
+                </span>
               </Link>
               <Button variant="glass" size="sm" onClick={handleLogout}>
                 <LogOut size={14} />
@@ -141,6 +146,9 @@ export default function Navbar() {
               ))}
               {user ? (
                 <div className="flex items-center justify-between pt-4">
+                  <Link to="/trips" onClick={() => setOpen(false)} className="text-sm text-white/80 hover:text-white">
+                    My trips
+                  </Link>
                   <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white" title="Edit profile">
                 <Avatar name={user.name} src={user.avatarUrl} className="h-7 w-7 text-xs" />
                     Hi, <span className="font-medium text-white">{user.name.split(" ")[0]}</span>

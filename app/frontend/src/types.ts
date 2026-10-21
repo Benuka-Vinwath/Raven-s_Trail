@@ -93,3 +93,53 @@ export interface User {
   createdAt: string;
   avatarUrl: string | null;
 }
+
+export type TripPhase = "planning" | "upcoming" | "ongoing" | "past" | "cancelled";
+
+export interface Trip {
+  id: string;
+  trailId: string;
+  trailSlug: string;
+  trailName: string;
+  distanceKm: number;
+  elevationGainM: number;
+  hikers: number;
+  days: number;
+  transport: string;
+  foodPerDay: number;
+  gearPerDay: number;
+  parkingDays: number;
+  startDate: string | null; // YYYY-MM-DD
+  endDate: string | null;
+  phase: TripPhase;
+  notes: string | null;
+  createdAt: string;
+  booking: { id: string; reference: string; status: "confirmed" | "cancelled"; totalLkr: number } | null;
+}
+
+export interface BookingItem {
+  shopName: string;
+  shopPhone: string | null;
+  itemName: string;
+  category: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface Booking {
+  id: string;
+  reference: string;
+  tripId: string;
+  trailSlug: string;
+  trailName: string;
+  status: "confirmed" | "cancelled";
+  phase: "upcoming" | "ongoing" | "past" | "cancelled";
+  startDate: string;
+  endDate: string;
+  days: number;
+  totalLkr: number;
+  createdAt: string;
+  cancelledAt: string | null;
+  items: BookingItem[];
+}
