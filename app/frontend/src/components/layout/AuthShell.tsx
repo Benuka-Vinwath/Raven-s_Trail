@@ -31,7 +31,7 @@ export default function AuthShell({ photo, headline, blurb, cardTitle, cardSub, 
 
       <Link to="/" className="absolute left-8 top-8 z-20 flex items-center gap-2 sm:left-12 sm:top-10">
         <RavenMark className="h-6 w-6 text-gold-400" />
-        <span className="font-display text-lg">Raven's Trail</span>
+        <span className="font-brand text-lg">Raven's Trail</span>
       </Link>
 
       <div className="relative z-10 mx-auto grid min-h-screen max-w-6xl items-center gap-12 px-6 py-28 sm:px-12 lg:grid-cols-[1fr_26rem]">

@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ChatWidget from "../chat/Chat.widget";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Layout() {
   const location = useLocation();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -21,7 +23,8 @@ export default function Layout() {
         </motion.div>
       </main>
       <Footer />
-      <ChatWidget />
+      {/* chat is for logged-in users only; the key remounts it with fresh state when the account changes */}
+      {user && <ChatWidget key={user.id} userId={user.id} />}
     </div>
   );
 }

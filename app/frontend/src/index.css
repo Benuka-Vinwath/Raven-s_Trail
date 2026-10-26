@@ -95,6 +95,13 @@ body {
   animation-range: entry 0% entry 40%;
 }
 
+/* the "Raven's Trail" wordmark only */
+.font-brand {
+  font-family: "Cinzel", "Georgia", serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
 .font-display {
   font-family: var(--font-display);
 }

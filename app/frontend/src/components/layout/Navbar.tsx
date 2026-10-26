@@ -40,7 +40,7 @@ export default function Navbar() {
           >
             <RavenMark className="h-6 w-6" />
           </motion.span>
-          <span className="font-display text-lg">Raven's Trail</span>
+          <span className="font-brand text-lg">Raven's Trail</span>
         </NavLink>
 
         <nav className="hidden lg:flex items-center gap-4 xl:gap-7">

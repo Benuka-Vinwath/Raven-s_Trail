@@ -36,7 +36,7 @@ export default function Footer() {
         <div className="col-span-2">
           <div className="flex items-center gap-2">
             <RavenMark className="h-6 w-6 text-gold-400" />
-            <span className="font-display text-lg text-parchment-50">Raven's Trail</span>
+            <span className="font-brand text-lg text-parchment-50">Raven's Trail</span>
           </div>
           <p className="mt-3 text-sm text-mist-100/70 leading-relaxed max-w-xs">
             One trail-tested companion for hiking Sri Lanka — routes, gear, parking, weather and budget in a

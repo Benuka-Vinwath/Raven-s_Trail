@@ -4,12 +4,13 @@ import { MessageCircle, RotateCcw, Send, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError, chatApi, type ChatMessage } from "../../lib/api";
 
-const STORAGE_KEY = "ravenstrail_chat";
+// one saved conversation per account, so switching users never shows someone else's chat
+const storageKey = (userId: string) => `ravenstrail_chat_${userId}`;
 
 // the conversation survives a refresh for this browser tab only
-function loadMessages(): ChatMessage[] {
+function loadMessages(key: string): ChatMessage[] {
   try {
-    const saved: ChatMessage[] = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "[]");
+    const saved: ChatMessage[] = JSON.parse(sessionStorage.getItem(key) ?? "[]");
     return saved.filter((m) => m.text);
   } catch {
     return [];
@@ -30,11 +31,10 @@ function renderText(text: string) {
   });
 }
 
-export default function ChatWidget() {
-  const { token } = useAuth();
+export default function ChatWidget({ userId }: { userId: string }) {
+  const { token, user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>(loadMessages);
-  const [status, setStatus] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>(() => loadMessages(storageKey(userId)));
   const abortRef = useRef<AbortController | null>(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,11 +47,11 @@ export default function ChatWidget() {
 
   useEffect(() => {
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      sessionStorage.setItem(storageKey(userId), JSON.stringify(messages));
     } catch {
       /* private mode: the chat just won't survive a refresh */
     }
-  }, [messages]);
+  }, [messages, userId]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
@@ -59,7 +59,6 @@ export default function ChatWidget() {
     abortRef.current?.abort();
     setMessages([]);
     setError(null);
-    setStatus("");
     setLoading(false);
   }
 
@@ -70,7 +69,6 @@ export default function ChatWidget() {
     setMessages([...history, { role: "assistant", text: "" }]); // the empty reply fills in as text streams
     setInput("");
     setError(null);
-    setStatus("");
     setLoading(true);
     const abort = new AbortController();
     abortRef.current = abort;
@@ -86,7 +84,7 @@ export default function ChatWidget() {
               copy[copy.length - 1] = { ...last, text: last.text + t };
               return copy;
             }),
-          onStatus: setStatus,
+          onStatus: () => {}, // tool progress isn't shown; the user only sees "Thinking…"
         },
         abort.signal
       );
@@ -95,7 +93,6 @@ export default function ChatWidget() {
     } finally {
       // an answer that never started shouldn't leave an empty bubble behind
       setMessages((prev) => (prev[prev.length - 1]?.role === "assistant" && !prev[prev.length - 1].text ? prev.slice(0, -1) : prev));
-      setStatus("");
       setLoading(false);
     }
   }
@@ -105,7 +102,7 @@ export default function ChatWidget() {
       {open && (
         <div className="fixed bottom-24 right-4 z-50 flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-ink-900/10 bg-white shadow-2xl">
           <div className="flex items-center justify-between bg-pine-950 px-4 py-3 text-white">
-            <span className="font-medium">Ask Raven</span>
+            <span className="truncate font-medium">Ask {user?.name ?? "Raven"}</span>
             <div className="flex items-center gap-3">
               {messages.length > 0 && (
                 <button onClick={newChat} aria-label="New chat" title="New chat"><RotateCcw size={16} /></button>
@@ -132,7 +129,7 @@ export default function ChatWidget() {
                 </p>
               </div>
             )))}
-            {loading && !messages[messages.length - 1]?.text && <p className="text-xs text-ink-700/60">{status || "Raven is thinking…"}</p>}
+            {loading && !messages[messages.length - 1]?.text && <p className="text-xs text-ink-700/60">Thinking…</p>}
             {error && <p className="text-xs text-clay-700">{error}</p>}
             <div ref={bottomRef} />
           </div>
