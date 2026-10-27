@@ -3,6 +3,8 @@ import { authApi } from "../lib/api";
 import type { User } from "../types";
 
 const TOKEN_KEY = "ravenstrail_token";
+// sessionStorage so the login ends when the browser closes; drop tokens saved by the old localStorage version.
+localStorage.removeItem(TOKEN_KEY);
 
 interface AuthContextValue {
   user: User | null;
@@ -18,7 +20,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState<string | null>(() => sessionStorage.getItem(TOKEN_KEY));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .me(token)
       .then(setUser)
       .catch(() => {
-        localStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(TOKEN_KEY);
         setToken(null);
         setUser(null);
       })
@@ -38,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token]);
 
   function applyAuth(response: { user: User; token: string }) {
-    localStorage.setItem(TOKEN_KEY, response.token);
+    sessionStorage.setItem(TOKEN_KEY, response.token);
     setToken(response.token);
     setUser(response.user);
   }
@@ -52,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setUser(null);
   }
