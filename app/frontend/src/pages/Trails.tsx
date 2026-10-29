@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import clsx from "clsx";
 import TrailCard from "../components/trails/TrailCard";
+import Select from "../components/ui/Select";
 import TrailsMap from "../components/trails/TrailsMap";
 import { useTrails } from "../hooks/useTrails";
 import type { Difficulty } from "../types";
@@ -135,15 +136,18 @@ export default function Trails() {
 
             <div>
               <h2 className="text-sm font-medium text-ink-900">Sort by</h2>
-              <select
+              <Select
+                ariaLabel="Sort by"
+                size="sm"
+                className="mt-3"
                 value={sort}
-                onChange={(e) => setSort(e.target.value as typeof sort)}
-                className="mt-3 w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2 text-sm text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
-              >
-                <option value="rating">Highest rated</option>
-                <option value="elevation">Highest elevation</option>
-                <option value="distance">Shortest distance</option>
-              </select>
+                onChange={(v) => setSort(v as typeof sort)}
+                options={[
+                  { value: "rating", label: "Highest rated" },
+                  { value: "elevation", label: "Highest elevation" },
+                  { value: "distance", label: "Shortest distance" },
+                ]}
+              />
             </div>
 
             <div className="h-56 rounded-2xl overflow-hidden border border-ink-900/10 hidden lg:block">

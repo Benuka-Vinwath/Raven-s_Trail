@@ -1,10 +1,13 @@
 import { useState } from "react";
 import PageHero from "../components/layout/PageHero";
 import { useTrails } from "../hooks/useTrails";
+import Select from "../components/ui/Select";
 import BudgetCalculator from "../components/budget/BudgetCalculator";
+import { useAuth } from "../context/AuthContext";
 
 export default function Budget() {
   const { data: trails, loading, error } = useTrails();
+  const { token } = useAuth();
   const [trailId, setTrailId] = useState<string | null>(null);
 
   const trail = (trails ?? []).find((t) => t.id === trailId) ?? trails?.[0];
@@ -22,23 +25,19 @@ export default function Budget() {
 
       {trail && (
         <>
-          <label className="mt-8 block max-w-sm">
+          <div className="mt-8 max-w-sm">
             <span className="block text-sm font-medium text-ink-900 mb-2">Trail</span>
-            <select
+            <Select
+              ariaLabel="Trail"
               value={trail.id}
-              onChange={(e) => setTrailId(e.target.value)}
-              className="w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
-            >
-              {(trails ?? []).map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name} — {t.district}
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={setTrailId}
+              options={(trails ?? []).map((t) => ({ value: t.id, label: t.name, hint: t.district }))}
+            />
+          </div>
 
           <div className="mt-10">
-            <BudgetCalculator key={trail.id} trail={trail} />
+            {/* token in key: remount (clear all inputs/AI plan) on logout or login */}
+            <BudgetCalculator key={`${trail.id}:${token ?? ""}`} trail={trail} />
           </div>
         </>
       )}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PageHero from "../components/layout/PageHero";
 import { useTrails } from "../hooks/useTrails";
+import Select from "../components/ui/Select";
 import WeatherPanel from "../components/trails/WeatherPanel";
 
 export default function Weather() {
@@ -22,17 +23,13 @@ export default function Weather() {
 
       {trail && (
         <>
-          <select
+          <Select
+            ariaLabel="Trail"
+            className="mt-8 w-full sm:w-80"
             value={trail.id}
-            onChange={(e) => setTrailId(e.target.value)}
-            className="mt-8 w-full sm:w-80 rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2.5 text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
-          >
-            {(trails ?? []).map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name} — {t.district}
-              </option>
-            ))}
-          </select>
+            onChange={setTrailId}
+            options={(trails ?? []).map((t) => ({ value: t.id, label: t.name, hint: t.district }))}
+          />
 
           <div className="mt-8">
             <WeatherPanel trail={trail} />

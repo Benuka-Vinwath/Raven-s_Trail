@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import Avatar from "../components/ui/Avatar";
 import { reviewsApi, ApiError } from "../lib/api";
 import Button from "../components/ui/Button";
+import Select from "../components/ui/Select";
 
 export default function Community() {
   const { user, token } = useAuth();
@@ -119,17 +120,13 @@ export default function Community() {
             <form onSubmit={handleSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-ink-900 mb-1.5">Trail</label>
-                <select
+                <Select
+                  ariaLabel="Trail"
+                  size="sm"
                   value={selectedSlug}
-                  onChange={(e) => setTrailSlug(e.target.value)}
-                  className="w-full rounded-2xl border border-ink-900/15 bg-parchment-50 px-3 py-2 text-sm text-ink-900 outline-none transition-colors duration-200 ease-smooth focus:border-forest-500"
-                >
-                  {(trails ?? []).map((t) => (
-                    <option key={t.id} value={t.slug}>
-                      {t.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setTrailSlug}
+                  options={(trails ?? []).map((t) => ({ value: t.slug, label: t.name, hint: t.district }))}
+                />
               </div>
 
               <div>

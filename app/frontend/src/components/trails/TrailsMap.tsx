@@ -34,7 +34,7 @@ export default function TrailsMap({ trails, parking = [], center, zoom }: Trails
       center={mapCenter}
       zoom={mapZoom}
       scrollWheelZoom={false}
-      className="h-full w-full"
+      className="isolate h-full w-full" // own stacking context, so Leaflet's z-indexes (up to 1000) can't paint over dropdowns
       attributionControl={false}
     >
       <TileLayer
