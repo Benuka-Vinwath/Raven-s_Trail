@@ -53,7 +53,7 @@ export const authApi = {
   me: (token: string) => request<User>("/auth/me", { token }),
   updateProfile: (
     token: string,
-    body: { name?: string; email?: string; currentPassword?: string; newPassword?: string; avatarUrl?: string | null }
+    body: { name?: string; email?: string; phone?: string; currentPassword?: string; newPassword?: string; avatarUrl?: string | null }
   ) => request<User>("/auth/me", { method: "PATCH", body, token }),
 };
 
@@ -97,6 +97,7 @@ export const budgetApi = {
 };
 
 export const reviewsApi = {
+  mine: (token: string) => request<RecentReview[]>("/reviews/mine", { token }),
   recent: (limit = 20) => request<RecentReview[]>(`/reviews?limit=${limit}`),
   forTrail: (slug: string) => request<Review[]>(`/trails/${slug}/reviews`),
   create: (slug: string, body: { rating: number; text: string; tags?: string[] }, token: string) =>

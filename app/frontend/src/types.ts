@@ -92,6 +92,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  phone: string | null;
   createdAt: string;
   avatarUrl: string | null;
 }

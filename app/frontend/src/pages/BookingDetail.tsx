@@ -59,8 +59,8 @@ export default function BookingDetail() {
     <>
       <PageHero page="profile" title="Your" dim="booking" blurb={data ? `Reference ${data.reference}` : "Gear booking details."} />
       <div className="mx-auto max-w-3xl px-5 pb-16">
-        <Link to="/profile" className="inline-flex items-center gap-1.5 text-sm text-ink-700 hover:text-forest-700">
-          <ArrowLeft size={15} /> My profile
+        <Link to="/profile?tab=bookings" className="inline-flex items-center gap-1.5 text-sm text-ink-700 hover:text-forest-700">
+          <ArrowLeft size={15} /> My bookings
         </Link>
 
         {error && <p className="mt-6 rounded-2xl border border-clay-600/30 bg-clay-100/40 p-4 text-sm text-clay-700">{error}</p>}

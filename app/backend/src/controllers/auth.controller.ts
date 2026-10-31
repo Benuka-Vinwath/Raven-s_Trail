@@ -30,11 +30,17 @@ const updateProfileSchema = z
       .max(300_000, "Image is too large")
       .nullable()
       .optional(),
+    // "" clears it; shops call or message this number about pickup, so it has to look real
+    phone: z
+      .string()
+      .trim()
+      .refine((p) => p === "" || (/^\+?[0-9 ()-]{9,20}$/.test(p) && p.replace(/\D/g, "").length >= 9), "Enter a phone number the shops can reach")
+      .optional(),
   })
-  .refine((b) => b.name || b.email || b.newPassword || b.avatarUrl !== undefined, { message: "Nothing to update" });
+  .refine((b) => b.name || b.email || b.newPassword || b.avatarUrl !== undefined || b.phone !== undefined, { message: "Nothing to update" });
 
 function mapUser(row: any) {
-  return { id: row.id, name: row.name, email: row.email, createdAt: row.created_at, avatarUrl: row.avatar_url ?? null };
+  return { id: row.id, name: row.name, email: row.email, phone: row.phone ?? null, createdAt: row.created_at, avatarUrl: row.avatar_url ?? null };
 }
 
 export async function signup(req: AuthedRequest, res: Response) {
@@ -97,13 +103,14 @@ export async function updateProfile(req: AuthedRequest, res: Response) {
   const email = body.email ?? user.email;
   const passwordHash = body.newPassword ? await bcrypt.hash(body.newPassword, 10) : user.password_hash;
   const avatarUrl = body.avatarUrl === undefined ? user.avatar_url : body.avatarUrl;
+  const phone = body.phone === undefined ? user.phone : body.phone || null;
 
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     const updated = await client.query(
-      "UPDATE users SET name = $1, email = $2, password_hash = $3, avatar_url = $4 WHERE id = $5 RETURNING *",
-      [name, email, passwordHash, avatarUrl, user.id]
+      "UPDATE users SET name = $1, email = $2, password_hash = $3, avatar_url = $4, phone = $5 WHERE id = $6 RETURNING *",
+      [name, email, passwordHash, avatarUrl, phone, user.id]
     );
     // reviews store the author name as text, so keep it in step with the profile
     await client.query("UPDATE reviews SET author = $1 WHERE user_id = $2", [name, user.id]);

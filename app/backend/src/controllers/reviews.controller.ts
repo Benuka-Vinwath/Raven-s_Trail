@@ -46,6 +46,19 @@ export async function listRecentReviews(req: Request, res: Response) {
   res.json(rows.map(mapReviewWithTrail));
 }
 
+// the reviews the logged-in user has written, newest first (for their profile)
+export async function listMyReviews(req: AuthedRequest, res: Response) {
+  if (!req.user) throw ApiError.unauthorized();
+  const { rows } = await pool.query(
+    `SELECT reviews.*, trails.slug AS trail_slug, trails.name AS trail_name
+     FROM reviews JOIN trails ON trails.id = reviews.trail_id
+     WHERE reviews.user_id = $1
+     ORDER BY reviews.created_at DESC`,
+    [req.user.id]
+  );
+  res.json(rows.map(mapReviewWithTrail));
+}
+
 export async function listReviewsForTrail(req: AuthedRequest, res: Response) {
   const trailId = await getTrailIdBySlug(req.params.slug);
   const { rows } = await pool.query(

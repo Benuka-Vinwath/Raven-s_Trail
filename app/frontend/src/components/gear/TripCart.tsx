@@ -13,7 +13,7 @@ const INPUT =
 const todayLocal = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
 
 export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnType<typeof useTripCart> }) {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [hikers, setHikers] = useState(2);
@@ -25,6 +25,8 @@ export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnTy
       return "";
     }
   });
+  // fall back to the profile number when nothing was remembered from a previous checkout
+  const shownPhone = phone || user?.phone || "";
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const { cartItems, days, perDay, total } = cart;
@@ -39,16 +41,16 @@ export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnTy
       setError("Choose your start and end dates first.");
       return;
     }
-    if (phone.split("").filter((ch) => ch >= "0" && ch <= "9").length < 9) {
+    if (shownPhone.split("").filter((ch) => ch >= "0" && ch <= "9").length < 9) {
       setError("Add a phone number the shops can reach about pickup.");
       return;
     }
     setBusy(true);
     try {
       await cart.save();
-      const booking = await cartApi.checkout(trail.slug, hikers, phone.trim(), token);
+      const booking = await cartApi.checkout(trail.slug, hikers, shownPhone.trim(), token);
       try {
-        localStorage.setItem("ravenstrail_phone", phone.trim());
+        localStorage.setItem("ravenstrail_phone", shownPhone.trim());
       } catch {
         /* private mode: just won't be remembered */
       }
@@ -145,7 +147,7 @@ export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnTy
               autoComplete="tel"
               placeholder="e.g. 077 123 4567"
               maxLength={20}
-              value={phone}
+              value={shownPhone}
               onChange={(e) => setPhone(e.target.value)}
               className={`mt-1 ${INPUT}`}
             />
