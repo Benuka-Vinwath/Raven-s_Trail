@@ -6,6 +6,7 @@ import { useTripCart } from "../../hooks/useTripCart";
 import { useAuth } from "../../context/AuthContext";
 import GearItemCard from "../gear/GearItemCard";
 import TripCart from "../gear/TripCart";
+import KitBuilder from "../gear/KitBuilder";
 import type { Trail } from "../../types";
 
 export default function GearShopsPanel({ trail }: { trail: Trail }) {
@@ -48,6 +49,8 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
   return (
     <div className="grid lg:grid-cols-[1fr_18rem] gap-10">
       <div className="space-y-4">
+        <KitBuilder trail={trail} cart={cart} />
+
         <p className="text-sm text-ink-700/70">
           {shops.length} {shops.length === 1 ? "shop can" : "shops can"} supply gear for {trail.name}. Tap a
           shop for prices and how to book.
@@ -71,7 +74,7 @@ export default function GearShopsPanel({ trail }: { trail: Trail }) {
                   <p className="mt-1 flex items-center gap-1.5 text-xs text-ink-700/70">
                     {shop.reviewCount > 0 && <Star size={12} className="fill-gold-500 text-gold-500" />}
                     {shop.reviewCount > 0 && `${shop.rating} (${shop.reviewCount}) · `}
-                    {shop.items.length > 0 ? `${shop.items.length} items with prices` : "Prices on request"}
+                    {shop.items.length > 0 ? `${shop.items.length} ${shop.items.length === 1 ? "item" : "items"} with prices` : "Prices on request"}
                   </p>
                 </div>
                 <motion.span

@@ -100,7 +100,7 @@ export default function ChatWidget({ userId }: { userId: string }) {
   return (
     <>
       {open && (
-        <div className="fixed bottom-24 right-4 z-50 flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-ink-900/10 bg-white shadow-2xl">
+        <div className="print:hidden fixed bottom-24 right-4 z-50 flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-ink-900/10 bg-white shadow-2xl">
           <div className="flex items-center justify-between bg-pine-950 px-4 py-3 text-white">
             <span className="truncate font-medium">Ask {user?.name ?? "Raven"}</span>
             <div className="flex items-center gap-3">
@@ -143,7 +143,7 @@ export default function ChatWidget({ userId }: { userId: string }) {
       )}
 
       <button onClick={() => setOpen((o) => !o)} aria-label="Open chat"
-        className="fixed bottom-6 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-forest-600 text-white shadow-xl transition-transform hover:scale-105">
+        className="print:hidden fixed bottom-6 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-forest-600 text-white shadow-xl transition-transform hover:scale-105">
         <MessageCircle size={24} />
       </button>
     </>

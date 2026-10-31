@@ -12,6 +12,8 @@ import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import MyTrips from "./pages/MyTrips";
 import BookingDetail from "./pages/BookingDetail";
+import VoucherPage from "./pages/VoucherPage";
+import VerifyPage from "./pages/VerifyPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
@@ -22,6 +24,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/v/:token" element={<VerifyPage />} />
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/trails" element={<Trails />} />
@@ -34,6 +37,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/trips" element={<MyTrips />} />
           <Route path="/bookings/:id" element={<BookingDetail />} />
+          <Route path="/bookings/:id/voucher" element={<VoucherPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

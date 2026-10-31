@@ -127,6 +127,11 @@ export function useTripCart(slug: string, allItems: ShopItem[], token: string | 
     setCart((prev) => ({ ...prev, startDate, endDate }));
   }
 
+  // replace the whole cart, e.g. with a shop's kit from the kit builder
+  function loadKit(items: Record<string, number>, startDate: string | null, endDate: string | null) {
+    setCart({ startDate, endDate, items });
+  }
+
   function clear() {
     setCart(EMPTY);
   }
@@ -136,5 +141,5 @@ export function useTripCart(slug: string, allItems: ShopItem[], token: string | 
     if (token) await cartApi.put(slug, payload(), token);
   }, [token, slug, payload]);
 
-  return { cart, cartItems, days, perDay, total, toggle, setQuantity, remove, setDates, clear, save };
+  return { cart, cartItems, days, perDay, total, toggle, setQuantity, remove, setDates, loadKit, clear, save };
 }

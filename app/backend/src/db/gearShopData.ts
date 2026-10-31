@@ -146,6 +146,25 @@ export const realShops: RealShop[] = [
   },
 ];
 
+// Standard type and size for an item, worked out from its name, so the kit builder can compare shops.
+export function classify(name: string): { type: string | null; size: number | null } {
+  const n = name.toLowerCase();
+  const num = (re: RegExp) => Number(n.match(re)?.[1]) || null;
+  if (/tent/.test(n)) return { type: "tent", size: num(/(\d+)\s*person/) };
+  if (/sleeping bag/.test(n)) return { type: "sleeping_bag", size: null };
+  if (/mattress|sleeping mat/.test(n)) return { type: "sleeping_mat", size: null };
+  if (/hammock/.test(n)) return { type: "hammock", size: null };
+  if (/stove/.test(n)) return { type: "stove", size: null };
+  if (/cook(ing)? set/.test(n)) return { type: "cookset", size: null };
+  if (/backpack/.test(n)) return { type: "backpack", size: num(/(\d+)\s*l\b/) };
+  if (/head ?torch|headlamp/.test(n)) return { type: "headlamp", size: null };
+  if (/lantern|camping light/.test(n)) return { type: "lantern", size: null };
+  if (/hiking stick|pole/.test(n)) return { type: "poles", size: null };
+  if (/hiking shoes/.test(n)) return { type: "shoes", size: null };
+  if (/raincoat|poncho/.test(n)) return { type: "rain_gear", size: null };
+  return { type: null, size: null };
+}
+
 // Safe to re-run: removes the previously inserted real shops (the ones with a source URL) and inserts them again.
 export async function insertRealShops(client: PoolClient) {
   await client.query("DELETE FROM gear_shops WHERE source_url IS NOT NULL");
@@ -162,8 +181,8 @@ export async function insertRealShops(client: PoolClient) {
 
     for (const item of shop.items) {
       await client.query(
-        `INSERT INTO shop_items (shop_id, name, category, price_per_day, available, description) VALUES ($1,$2,$3,$4,0,$5)`,
-        [shopId, item.name, item.category, item.pricePerDay, item.description]
+        `INSERT INTO shop_items (shop_id, name, category, price_per_day, available, description, gear_type, size) VALUES ($1,$2,$3,$4,0,$5,$6,$7)`,
+        [shopId, item.name, item.category, item.pricePerDay, item.description, classify(item.name).type, classify(item.name).size]
       );
     }
 

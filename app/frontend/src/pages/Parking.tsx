@@ -1,6 +1,8 @@
 import { ShieldCheck, Car } from "lucide-react";
 import PageHero from "../components/layout/PageHero";
-import TrailsMap from "../components/trails/TrailsMap";
+import { lazy, Suspense } from "react";
+
+const TrailsMap = lazy(() => import("../components/trails/TrailsMap"));
 import { useParkingSpots } from "../hooks/useParkingSpots";
 import { useTrails } from "../hooks/useTrails";
 
@@ -53,11 +55,13 @@ export default function Parking() {
             ))}
           </div>
 
-          <aside className="h-72 lg:h-full rounded-2xl overflow-hidden border border-ink-900/10 lg:sticky lg:top-24">
-            <TrailsMap
-              trails={(trails ?? []).filter((t) => parkingSpots.some((p) => p.nearTrail === t.name))}
-              parking={parkingSpots}
-            />
+          <aside className="h-72 lg:h-full lg:min-h-[32rem] rounded-2xl overflow-hidden border border-ink-900/10 lg:sticky lg:top-24">
+            <Suspense fallback={<div className="h-full w-full animate-pulse bg-ink-900/5" />}>
+              <TrailsMap
+                trails={(trails ?? []).filter((t) => parkingSpots.some((p) => p.nearTrail === t.name))}
+                parking={parkingSpots}
+              />
+            </Suspense>
           </aside>
         </div>
       )}

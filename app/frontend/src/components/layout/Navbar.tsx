@@ -30,7 +30,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-3 z-50 mx-3 sm:mx-6 mt-3 rounded-3xl border border-white/15 bg-pine-950/75 text-parchment-50 backdrop-blur-xl backdrop-saturate-150 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.5)]">
+    <header className="print:hidden sticky top-3 z-50 mx-3 sm:mx-6 mt-3 rounded-3xl border border-white/15 bg-pine-950/75 text-parchment-50 backdrop-blur-xl backdrop-saturate-150 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.5)]">
       <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
         <NavLink to="/" className="flex items-center gap-2 shrink-0" onClick={() => setOpen(false)}>
           <motion.span

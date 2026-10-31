@@ -9,6 +9,8 @@ function mapItem(row: any) {
     pricePerDay: row.price_per_day,
     available: row.available,
     description: row.description,
+    gearType: row.gear_type,
+    size: row.size,
   };
 }
 
@@ -22,12 +24,12 @@ export async function listGearShops(req: Request, res: Response) {
             SELECT DISTINCT gs.* FROM gear_shops gs
             JOIN gear_shop_trails gst ON gst.shop_id = gs.id
             JOIN trails t ON t.id = gst.trail_id
-            WHERE t.slug = $1
+            WHERE t.slug = $1 AND gs.source_url IS NOT NULL
             ORDER BY gs.rating DESC
           `,
           values: [trail.trim()],
         }
-      : { text: "SELECT * FROM gear_shops ORDER BY rating DESC", values: [] };
+      : { text: "SELECT * FROM gear_shops WHERE source_url IS NOT NULL ORDER BY rating DESC", values: [] };
 
   const { rows: shops } = await pool.query(shopsQuery.text, shopsQuery.values);
   if (shops.length === 0) return res.json([]);

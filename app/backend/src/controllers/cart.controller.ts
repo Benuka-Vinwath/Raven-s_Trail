@@ -14,7 +14,15 @@ const putCartSchema = z.object({
   items: z.array(z.object({ itemId: z.string().uuid(), quantity: z.number().int().min(1).max(20) })).max(40),
 });
 
-const checkoutSchema = z.object({ hikers: z.number().int().min(1).max(50) });
+const checkoutSchema = z.object({
+  hikers: z.number().int().min(1).max(50),
+  // shops call or message this number about pickup, so it has to be a real one
+  phone: z
+    .string()
+    .trim()
+    .regex(/^\+?[0-9 ()-]{9,20}$/, "Enter a phone number the shops can reach")
+    .refine((p) => p.replace(/\D/g, "").length >= 9, "Enter a phone number the shops can reach"),
+});
 
 const MAX_RENTAL_DAYS = 30;
 
@@ -101,7 +109,7 @@ export async function putCart(req: AuthedRequest, res: Response) {
 export async function checkoutCart(req: AuthedRequest, res: Response) {
   if (!req.user) throw ApiError.unauthorized();
   const trailId = await trailBySlug(req.params.slug);
-  const { hikers } = checkoutSchema.parse(req.body);
+  const { hikers, phone } = checkoutSchema.parse(req.body);
 
   const client = await pool.connect();
   try {
@@ -113,7 +121,7 @@ export async function checkoutCart(req: AuthedRequest, res: Response) {
     const { rows: lines } = cart
       ? await client.query(
           `SELECT ci.quantity, si.name AS item_name, si.category, si.price_per_day, si.available,
-                  gs.name AS shop_name, gs.phone AS shop_phone
+                  gs.name AS shop_name, gs.phone AS shop_phone, gs.address AS shop_address
            FROM cart_items ci
            JOIN shop_items si ON si.id = ci.item_id
            JOIN gear_shops gs ON gs.id = si.shop_id
@@ -147,15 +155,15 @@ export async function checkoutCart(req: AuthedRequest, res: Response) {
       [req.user.id, trailId, hikers, days, Math.round(total / days), start, end]
     );
     const { rows: bookings } = await client.query(
-      `INSERT INTO bookings (reference, user_id, trip_id, trail_id, start_date, end_date, days, total_lkr)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
-      [makeReference(), req.user.id, trips[0].id, trailId, start, end, days, total]
+      `INSERT INTO bookings (reference, verify_token, customer_phone, user_id, trip_id, trail_id, start_date, end_date, days, total_lkr)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+      [makeReference(), crypto.randomBytes(16).toString("hex"), phone, req.user.id, trips[0].id, trailId, start, end, days, total]
     );
     for (const l of lines) {
       await client.query(
-        `INSERT INTO booking_items (booking_id, shop_name, shop_phone, item_name, category, quantity, unit_price)
-         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-        [bookings[0].id, l.shop_name, l.shop_phone, l.item_name, l.category, l.quantity, l.price_per_day]
+        `INSERT INTO booking_items (booking_id, shop_name, shop_phone, shop_address, item_name, category, quantity, unit_price)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+        [bookings[0].id, l.shop_name, l.shop_phone, l.shop_address, l.item_name, l.category, l.quantity, l.price_per_day]
       );
     }
     await client.query("DELETE FROM carts WHERE id = $1", [cart.id]);

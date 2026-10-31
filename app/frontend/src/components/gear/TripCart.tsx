@@ -17,6 +17,14 @@ export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnTy
   const navigate = useNavigate();
   const location = useLocation();
   const [hikers, setHikers] = useState(2);
+  // the shops phone or message this number about pickup; remembered for next time
+  const [phone, setPhone] = useState(() => {
+    try {
+      return localStorage.getItem("ravenstrail_phone") ?? "";
+    } catch {
+      return "";
+    }
+  });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const { cartItems, days, perDay, total } = cart;
@@ -31,10 +39,19 @@ export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnTy
       setError("Choose your start and end dates first.");
       return;
     }
+    if (phone.split("").filter((ch) => ch >= "0" && ch <= "9").length < 9) {
+      setError("Add a phone number the shops can reach about pickup.");
+      return;
+    }
     setBusy(true);
     try {
       await cart.save();
-      const booking = await cartApi.checkout(trail.slug, hikers, token);
+      const booking = await cartApi.checkout(trail.slug, hikers, phone.trim(), token);
+      try {
+        localStorage.setItem("ravenstrail_phone", phone.trim());
+      } catch {
+        /* private mode: just won't be remembered */
+      }
       cart.clear();
       navigate(`/bookings/${booking.id}`);
     } catch (err) {
@@ -45,7 +62,7 @@ export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnTy
   }
 
   return (
-    <div className="border border-ink-900/10 rounded-2xl p-5 h-fit lg:sticky lg:top-24">
+    <div id="gear-order" className="border border-ink-900/10 rounded-2xl p-5 h-fit lg:sticky lg:top-24">
       <h2 className="font-medium text-ink-900">Your gear order</h2>
       <p className="mt-1 text-xs text-ink-700/60">One order, even if the gear comes from several shops.</p>
 
@@ -120,6 +137,19 @@ export default function TripCart({ trail, cart }: { trail: Trail; cart: ReturnTy
           <label className="flex items-center justify-between gap-3 text-xs text-ink-700">
             Hikers
             <input type="number" min={1} max={50} value={hikers} onChange={(e) => setHikers(Math.max(1, Number(e.target.value)))} className={`w-16 text-center ${INPUT}`} />
+          </label>
+          <label className="block text-xs text-ink-700">
+            Your phone number
+            <input
+              type="tel"
+              autoComplete="tel"
+              placeholder="e.g. 077 123 4567"
+              maxLength={20}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className={`mt-1 ${INPUT}`}
+            />
+            <span className="mt-1 block text-ink-700/50">So the shops can reach you about pickup.</span>
           </label>
           {error && <p className="rounded-xl border border-clay-600/30 bg-clay-100/40 p-2.5 text-xs text-clay-700">{error}</p>}
           <Button onClick={checkout} disabled={busy} className="w-full">

@@ -1,6 +1,7 @@
 import { useState, type InputHTMLAttributes } from "react";
 import { Navigate } from "react-router-dom";
 import PageHero from "../components/layout/PageHero";
+import MyBookings from "../components/profile/MyBookings";
 import Avatar from "../components/ui/Avatar";
 import Button from "../components/ui/Button";
 import Reveal from "../components/ui/Reveal";
@@ -189,10 +190,13 @@ export default function Profile() {
         dim="profile"
         blurb={`Member since ${new Date(user.createdAt).toLocaleDateString(undefined, { month: "long", year: "numeric" })}. Update your name, email or password.`}
       />
-      <div className="mx-auto max-w-6xl px-5 pb-16">
+      <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-16 lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)]">
         <Reveal>
           <AvatarPicker user={user} />
           <ProfileForm user={user} />
+        </Reveal>
+        <Reveal delay={0.1}>
+          <MyBookings />
         </Reveal>
       </div>
     </>

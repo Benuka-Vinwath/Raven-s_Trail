@@ -1,6 +1,8 @@
 import { ShieldCheck, ShieldAlert, Car } from "lucide-react";
 import { useParkingSpots } from "../../hooks/useParkingSpots";
-import TrailsMap from "./TrailsMap";
+import { lazy, Suspense } from "react";
+
+const TrailsMap = lazy(() => import("./TrailsMap"));
 import type { Trail } from "../../types";
 
 export default function ParkingPanel({ trail }: { trail: Trail }) {
@@ -58,8 +60,10 @@ export default function ParkingPanel({ trail }: { trail: Trail }) {
         ))}
       </div>
 
-      <div className="h-72 lg:h-full rounded-2xl overflow-hidden border border-ink-900/10 lg:sticky lg:top-24">
-        <TrailsMap trails={[trail]} parking={spots} center={trail.startPoint} zoom={12} />
+      <div className="h-72 lg:h-full lg:min-h-[26rem] rounded-2xl overflow-hidden border border-ink-900/10 lg:sticky lg:top-24">
+        <Suspense fallback={<div className="h-full w-full animate-pulse bg-ink-900/5" />}>
+          <TrailsMap trails={[trail]} parking={spots} center={trail.startPoint} zoom={12} />
+        </Suspense>
       </div>
     </div>
   );

@@ -41,6 +41,8 @@ export interface ShopItem {
   pricePerDay: number;
   available: number;
   description: string;
+  gearType: string | null; // standard type (tent, sleeping_bag...) used for comparing shops
+  size: number | null; // tent capacity or backpack litres, when known
 }
 
 export interface GearShop {
@@ -120,6 +122,7 @@ export interface Trip {
 export interface BookingItem {
   shopName: string;
   shopPhone: string | null;
+  shopAddress: string | null;
   itemName: string;
   category: string;
   quantity: number;
@@ -127,9 +130,20 @@ export interface BookingItem {
   lineTotal: number;
 }
 
+export interface BookingShop {
+  name: string;
+  phone: string | null;
+  address: string | null;
+  signature: string; // makes this shop's voucher link tamper-proof
+  subtotal: number;
+}
+
 export interface Booking {
   id: string;
   reference: string;
+  verifyToken: string; // the secret behind the QR code
+  customerName: string;
+  customerPhone: string | null;
   tripId: string;
   trailSlug: string;
   trailName: string;
@@ -141,5 +155,75 @@ export interface Booking {
   totalLkr: number;
   createdAt: string;
   cancelledAt: string | null;
+  pickedUpAt: string | null;
+  returnedAt: string | null;
   items: BookingItem[];
+  shops: BookingShop[];
+}
+
+export type VoucherStage = "ready" | "collected" | "returned" | "cancelled";
+
+// what a shop sees after scanning a voucher: deliberately limited
+export interface VoucherCheck {
+  reference: string;
+  stage: VoucherStage;
+  expired: boolean;
+  notStartedYet: boolean;
+  customerFirstName: string;
+  phoneEnding: string | null;
+  trailName: string;
+  startDate: string;
+  endDate: string;
+  days: number;
+  scope: "all" | "shop";
+  shopName: string | null;
+  items: { shopName: string; itemName: string; quantity: number; unitPrice: number; lineTotal: number }[];
+  total: number;
+  pickedUpAt: string | null;
+  returnedAt: string | null;
+  cancelledAt: string | null;
+}
+
+export type KitLevel = "essential" | "recommended" | "optional";
+export type KitMode = "day" | "night" | "rain" | "camp";
+
+export interface KitItem {
+  type: string;
+  label: string;
+  quantity: number;
+  level: KitLevel;
+  reason: string;
+}
+
+export interface KitLine {
+  type: string;
+  label: string;
+  level: KitLevel;
+  covered: boolean;
+  itemId?: string;
+  itemName?: string;
+  quantity?: number;
+  unitPrice?: number;
+  assumedSize?: boolean; // the shop doesn't say how many people the tent sleeps
+  lineTotal: number;
+}
+
+export interface KitShop {
+  shop: { id: string; name: string; district: string; address: string; phone: string | null; website: string | null; note: string | null };
+  essentialCovered: number;
+  recommendedCovered: number;
+  totalLkr: number;
+  perPersonLkr: number;
+  missing: string[];
+  lines: KitLine[];
+}
+
+export interface Kit {
+  inputs: { people: number; nights: number; days: number; mode: KitMode; rainHint: boolean; coldHint: boolean };
+  trail: { slug: string; name: string };
+  kit: KitItem[];
+  totals: { essential: number; recommended: number };
+  shops: KitShop[];
+  callToPrice: { id: string; name: string; phone: string | null }[];
+  notRentable: string[];
 }

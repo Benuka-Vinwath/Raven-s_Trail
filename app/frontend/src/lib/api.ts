@@ -1,4 +1,4 @@
-import type { Trail, GearShop, ParkingSpot, Review, RecentReview, User, Trip, Booking } from "../types";
+import type { Trail, GearShop, ParkingSpot, Review, RecentReview, User, Trip, Booking, Kit, KitMode, VoucherCheck } from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -103,6 +103,15 @@ export const reviewsApi = {
     request<Review>(`/trails/${slug}/reviews`, { method: "POST", body, token }),
 };
 
+export const kitApi = {
+  get: (slug: string, p: { people: number; nights: number | null; mode: KitMode | null; rain: boolean; cold: boolean }) => {
+    const q = new URLSearchParams({ people: String(p.people), rain: p.rain ? "1" : "0", cold: p.cold ? "1" : "0" });
+    if (p.nights !== null) q.set("nights", String(p.nights)); // left out = let the server choose from the trail
+    if (p.mode) q.set("mode", p.mode);
+    return request<Kit>(`/trails/${slug}/kit?${q}`);
+  },
+};
+
 export interface CartData {
   startDate: string | null;
   endDate: string | null;
@@ -131,11 +140,14 @@ export const tripsApi = {
 export const cartApi = {
   get: (slug: string, token: string) => request<CartData>(`/cart/${slug}`, { token }),
   put: (slug: string, body: CartData, token: string) => request<void>(`/cart/${slug}`, { method: "PUT", body, token }),
-  checkout: (slug: string, hikers: number, token: string) =>
-    request<Booking>(`/cart/${slug}/checkout`, { method: "POST", body: { hikers }, token }),
+  checkout: (slug: string, hikers: number, phone: string, token: string) =>
+    request<Booking>(`/cart/${slug}/checkout`, { method: "POST", body: { hikers, phone }, token }),
 };
 
 export const bookingsApi = {
+  list: (token: string) => request<Booking[]>("/bookings", { token }),
+  collected: (id: string, token: string) => request<Booking>(`/bookings/${id}/collected`, { method: "POST", token }),
+  returned: (id: string, token: string) => request<Booking>(`/bookings/${id}/returned`, { method: "POST", token }),
   get: (id: string, token: string) => request<Booking>(`/bookings/${id}`, { token }),
   cancel: (id: string, token: string) => request<Booking>(`/bookings/${id}/cancel`, { method: "POST", token }),
 };
@@ -198,3 +210,13 @@ async function streamChat(messages: ChatMessage[], token: string | null, handler
 }
 
 export const chatApi = { stream: streamChat };
+
+// public: what a shop owner sees after scanning a customer's QR code
+export const verifyApi = {
+  get: (token: string, shop?: string | null, signature?: string | null) => {
+    const q = new URLSearchParams();
+    if (shop) q.set("shop", shop);
+    if (signature) q.set("s", signature);
+    return request<VoucherCheck>(`/verify/${token}${q.size ? `?${q}` : ""}`);
+  },
+};

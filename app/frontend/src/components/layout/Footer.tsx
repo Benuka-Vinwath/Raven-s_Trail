@@ -29,7 +29,7 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-pine-950 text-mist-100">
+    <footer className="print:hidden relative overflow-hidden border-t border-white/10 bg-pine-950 text-mist-100">
       <img src={heroPhoto(1600)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-25" />
       <div className="absolute inset-0 bg-gradient-to-b from-pine-950/70 to-pine-950/95" />
       <div className="relative max-w-6xl mx-auto px-6 py-16 grid grid-cols-2 md:grid-cols-5 gap-10">
